@@ -1,0 +1,35 @@
+[project]
+name = "rm-tool-service"
+version = "0.1.0"
+description = "RM 候选人同步工具服务基线"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+rm-server = "tool_service.server:main"
+rm-client = "tool_service.client:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.11,<1", "pyright>=1.1,<2"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pyright]
+include = ["src", "tests", "self-check"]
+typeCheckingMode = "basic"
+pythonVersion = "3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tool_service"]

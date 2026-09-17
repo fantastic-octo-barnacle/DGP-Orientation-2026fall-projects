@@ -1,0 +1,56 @@
+# Python 本地工具服务
+
+从已有程序开始，学习阅读代码、添加功能、校验输入和验证修改。你只需具备变量、分支、循环、函数等基础语法；项目采用同步通信，不要求异步、数据库、GUI 或持久化。
+
+## 基线和任务
+
+| 阶段 | 已提供 | 你需要完成 |
+|---|---|---|
+| 运行与理解 | 完整通信、文字客户端、ping/echo、环境及检查配置 | 运行两端，追踪一次请求 |
+| 基础：文本统计 | 服务端 text_stats 和测试 | 客户端多行输入、请求构造、结果显示及测试 |
+| 标准：数值统计 | 协议要求与少量样例 | 两端 number_stats、参数校验、错误显示和测试 |
+| 进阶：键值存取 | 协议要求与少量样例 | 两端 set/get/delete/list，验证跨请求状态 |
+
+详细字段和边界见[协议](protocol.md)，完成要求见[验收清单](acceptance.md)。不要为了“跑通”删掉错误处理或只在客户端计算服务端应返回的结果。
+
+## 恢复环境
+
+安装 [uv](https://docs.astral.sh/uv/getting-started/installation/)。在本目录执行：
+
+```text
+uv sync --locked
+uv run pytest
+uv run ruff format --check .
+uv run ruff check .
+uv run pyright
+```
+
+项目指定 Python 3.12，uv 可获取对应解释器。清单声明依赖，uv.lock 固定解析版本，.venv 是本机可重建环境。依赖变更后应更新锁文件；不要提交 .venv。
+
+## 运行
+
+在两个终端分别进入本目录：
+
+```text
+uv run rm-server --port 7878
+uv run rm-client --port 7878
+```
+
+看到服务端 LISTENING 后再启动客户端。菜单 1 是 ping、2 是 echo、q 退出；服务端使用 Ctrl-C 结束。服务端顺序处理连接，客户端退出前不要期待第二个连接同时得到服务。端口被占用时换一个端口并同时更新两端。
+
+## 读代码的路线
+
+- `client.py`：菜单、请求构造、响应显示。
+- `transport.py`：按行读取和长度边界。
+- `protocol.py`：解析、字段检查和业务处理。
+- `server.py`：接受连接与循环收发。
+- `tests/`：已有能力的测试。
+- `self-check/`：[阶段自查](self-check/README.md)。
+
+先追踪一次 echo，再研究 text_stats 的服务端输入和返回值。新增功能怎样组织、修改哪些文件，由你依据行为目标决定。
+
+## 验证与成果
+
+基线检查应全部通过。每个阶段在保留基线行为的基础上增加测试，结合[通用参考程序](../../reference/README.md)替换一端排查问题。[成果说明](../../common/deliverables.md)列出需要保留的材料。
+
+可选 CI 扩展运行 pytest、Ruff 和 Pyright；不属于主线完成门槛。
