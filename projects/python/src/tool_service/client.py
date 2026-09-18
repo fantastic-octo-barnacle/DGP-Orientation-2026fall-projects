@@ -5,7 +5,7 @@ import json
 import socket
 from typing import Any
 
-from .protocol import encode
+from .protocol import MAX_ID, encode, reject_constant, validate_json_values
 from .transport import read_frame
 
 
@@ -22,9 +22,35 @@ def exchange(connection: socket.socket, reader: Any, request: dict[str, Any]) ->
     frame = read_frame(reader)
     if frame is None:
         raise ConnectionError("服务端关闭了连接")
-    response = json.loads(frame)
-    if not isinstance(response, dict) or response.get("id") != request["id"]:
-        raise ValueError("响应格式或 id 不匹配")
+    try:
+        response = json.loads(frame.decode("utf-8"), parse_constant=reject_constant)
+        validate_json_values(response)
+    except (ValueError, UnicodeError, RecursionError) as error:
+        raise ValueError("响应必须是有效的 UTF-8 JSON") from error
+    if not isinstance(response, dict):
+        raise ValueError("响应必须是对象")
+    response_id = response.get("id")
+    if (
+        type(response_id) is not int
+        or not 0 <= response_id <= MAX_ID
+        or response_id != request["id"]
+    ):
+        raise ValueError("响应 id 必须是与请求一致的整数")
+    if type(response.get("ok")) is not bool:
+        raise ValueError("响应 ok 必须是布尔值")
+    if response["ok"]:
+        if set(response) != {"id", "ok", "data"}:
+            raise ValueError("成功响应必须恰有 id、ok 和 data 字段")
+    else:
+        error = response.get("error")
+        if (
+            set(response) != {"id", "ok", "error"}
+            or not isinstance(error, dict)
+            or set(error) != {"code", "message"}
+            or not isinstance(error["code"], str)
+            or not isinstance(error["message"], str)
+        ):
+            raise ValueError("错误响应必须包含 id、ok 和具有字符串 code/message 的 error")
     return response
 
 

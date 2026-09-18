@@ -3,6 +3,12 @@ use tokio::net::{TcpListener, TcpStream};
 
 #[tokio::test]
 async fn one_request_then_close() {
+    tokio::time::timeout(std::time::Duration::from_secs(3), check_connection())
+        .await
+        .expect("测试超过 3 秒：检查响应、连接关闭和任务结束；实现连续交互后需更新关闭断言");
+}
+
+async fn check_connection() {
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let address = listener.local_addr().unwrap();
     let worker = tokio::spawn(async move {

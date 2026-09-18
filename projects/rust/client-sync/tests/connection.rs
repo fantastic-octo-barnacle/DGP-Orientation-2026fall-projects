@@ -3,6 +3,19 @@ use std::net::TcpListener;
 
 #[test]
 fn sends_ping_and_reads_matching_response() {
+    let (done, result) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let outcome = std::panic::catch_unwind(check_connection);
+        let _ = done.send(outcome);
+    });
+    match result.recv_timeout(std::time::Duration::from_secs(3)) {
+        Ok(Ok(())) => {}
+        Ok(Err(error)) => std::panic::resume_unwind(error),
+        Err(error) => panic!("测试未在 3 秒内完成：检查请求发送、响应读取和连接退出：{error}"),
+    }
+}
+
+fn check_connection() {
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let address = listener.local_addr().unwrap();
     let worker = std::thread::spawn(move || {

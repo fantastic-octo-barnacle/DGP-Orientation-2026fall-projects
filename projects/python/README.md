@@ -15,9 +15,9 @@
 
 详细字段和边界见[协议](protocol.md)，完成要求见[验收清单](acceptance.md)。保留错误处理，由服务端完成业务计算，客户端负责输入、发送请求和显示结果。
 
-## 恢复环境
+## 配置环境并检查起始代码
 
-安装 [uv](https://docs.astral.sh/uv/getting-started/installation/)。在本目录执行：
+安装 [uv](https://docs.astral.sh/uv/getting-started/installation/)。在个人仓库根目录打开终端，执行 `cd projects/python`，再运行：
 
 ```text
 uv sync --locked
@@ -29,16 +29,32 @@ uv run pyright
 
 项目指定 Python 3.12，uv 可获取对应解释器。清单声明依赖，uv.lock 固定解析版本，.venv 是本机可重建环境。依赖变更后应更新锁文件，.venv 通过忽略规则保留在本机。
 
-## 运行
+## 第一次运行
 
-在两个终端分别进入本目录：
+终端 A：从个人仓库根目录执行 `cd projects/python`，启动服务端：
 
 ```text
 uv run rm-server --port 7878
+```
+
+看到 `LISTENING 127.0.0.1:7878` 后，保持终端 A 运行。终端 B：同样进入 `projects/python`，启动客户端：
+
+```text
 uv run rm-client --port 7878
 ```
 
-看到服务端 LISTENING 后再启动客户端。菜单 1 是 ping、2 是 echo、q 退出；服务端使用 Ctrl-C 结束。服务端顺序处理连接，当前客户端退出后才处理下一个连接。端口被占用时换一个端口并同时更新两端。
+在终端 B 输入 `1` 并回车，应看到包含 `"ok": true` 和 `"data": "pong"` 的响应。再输入 `2`，按提示输入 `hello`，应收到 `"data": "hello"`。JSON 字段顺序可以不同。
+
+输入 `q` 退出客户端。保持服务端运行，在终端 B 执行：
+
+```text
+uv run python self-check/check.py baseline
+uv run python self-check/check.py text
+```
+
+分别看到 `PASS: baseline` 和 `PASS: text` 表示起始服务端的正常样例通过。`text` 通过只说明已有服务端能统计文本；客户端的多行输入仍是你的基础任务。最后在终端 A 按 Ctrl-C 停止服务端。
+
+服务端顺序处理连接，当前客户端退出后才处理下一个连接。运行自查前先退出交互客户端。端口被占用时换一个端口，并同步修改服务端、客户端和自查命令的 `--port`。
 
 ## 读代码的路线
 
