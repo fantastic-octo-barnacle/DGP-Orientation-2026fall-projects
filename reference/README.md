@@ -10,7 +10,7 @@
 - Linux x86-64：`rm-recruit-reference-linux-x86_64`
 - macOS Apple Silicon：`rm-recruit-reference-macos-arm64`
 
-WSL2 中使用 Linux 版本，Windows PowerShell 中使用 Windows 版本。其他系统或架构目前没有对应的预编译文件。
+WSL2 中使用 Linux 版本，Windows PowerShell 中使用 Windows 版本。
 
 Linux/macOS 下载后，在文件所在目录赋予执行权限：
 
