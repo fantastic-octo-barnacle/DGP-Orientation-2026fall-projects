@@ -2,8 +2,6 @@
 
 本项目难度较低，适合编程基础较弱、刚学完变量、分支、循环和函数等基础语法的同学。你将从已有程序开始，学习阅读代码、添加功能、校验输入和验证修改。项目采用同步通信，围绕文本统计、数值统计和内存键值存取展开。
 
-开始前，完成 [Git/GitHub](../../common/git-github.md) 与 [WSL2](../../common/wsl2.md) 共通任务；已有基础的同学也需要完成，WSL2 按设备条件完成相应内容。
-
 ## 基线和任务
 
 | 阶段 | 已提供 | 你需要完成 |
@@ -52,9 +50,9 @@ uv run python self-check/check.py baseline
 uv run python self-check/check.py text
 ```
 
-分别看到 `PASS: baseline` 和 `PASS: text` 表示起始服务端的正常样例通过。`text` 通过只说明已有服务端能统计文本；客户端的多行输入仍是你的基础任务。最后在终端 A 按 Ctrl-C 停止服务端。
+看到两项 `PASS` 表示起始服务端自查通过。最后在终端 A 按 Ctrl-C 停止服务端。
 
-服务端顺序处理连接，当前客户端退出后才处理下一个连接。运行自查前先退出交互客户端。端口被占用时换一个端口，并同步修改服务端、客户端和自查命令的 `--port`。
+服务端在当前客户端退出后才处理下一个连接。端口被占用时换一个端口，并同步修改服务端、客户端和自查命令的 `--port`。
 
 ## 读代码的路线
 
@@ -71,4 +69,4 @@ uv run python self-check/check.py text
 
 基线检查应全部通过。每个阶段在保留基线行为的基础上增加测试，结合[通用参考程序](../../reference/README.md)替换一端排查问题。[成果说明](../../common/deliverables.md)列出需要保留的材料。
 
-可选 CI 扩展运行 pytest、Ruff 和 Pyright；不属于主线完成门槛。
+可选 CI：运行 pytest、Ruff 和 Pyright。

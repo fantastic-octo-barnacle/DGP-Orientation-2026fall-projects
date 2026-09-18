@@ -1,8 +1,8 @@
 # 通用协议参考程序
 
-参考程序作为已知可工作的通信对端，帮助验证自己的客户端或服务端。它实现 ping、echo、delay、text_stats、number_stats、set/get/delete/list，按所选项目范围使用；不需要实现所有动作。
+参考程序作为已知可工作的通信对端，帮助验证自己的客户端或服务端。它实现 ping、echo、delay、text_stats、number_stats、set/get/delete/list，按所选项目范围使用。
 
-## 获取与校验
+## 下载
 
 从原始交付仓库的 [reference-v1.0.0 Release](https://github.com/fantastic-octo-barnacle/DGP-Orientation-2026fall-projects/releases/tag/reference-v1.0.0) 下载对应平台：
 
@@ -10,32 +10,16 @@
 - Linux x86-64：`rm-recruit-reference-linux-x86_64`
 - macOS Apple Silicon：`rm-recruit-reference-macos-arm64`
 
-同时下载 `SHA256SUMS`，与可执行文件放在同一目录。在该目录打开终端，执行适合当前环境的命令：
+WSL2 中使用 Linux 版本，Windows PowerShell 中使用 Windows 版本。其他系统或架构目前没有对应的预编译文件。
 
-Windows PowerShell：
-
-```powershell
-Get-FileHash .\rm-recruit-reference-windows-x86_64.exe -Algorithm SHA256
-Get-Content .\SHA256SUMS
-```
-
-Linux / WSL2 x86-64：
+Linux/macOS 下载后，在文件所在目录赋予执行权限：
 
 ```sh
-sha256sum rm-recruit-reference-linux-x86_64
-cat SHA256SUMS
+# Linux / WSL2
 chmod +x rm-recruit-reference-linux-x86_64
-```
-
-macOS Apple Silicon：
-
-```sh
-shasum -a 256 rm-recruit-reference-macos-arm64
-cat SHA256SUMS
+# macOS Apple Silicon
 chmod +x rm-recruit-reference-macos-arm64
 ```
-
-计算结果应与 `SHA256SUMS` 中同名文件的值一致，十六进制字母大小写不影响比较。WSL2 中使用 Linux 版本，Windows PowerShell 中使用 Windows 版本。其他系统或架构目前没有对应的预编译文件。macOS 若阻止下载的程序，先核实来源、架构与校验值，再依据系统提示处理。
 
 Release 位于原始交付仓库，个人模板仓库中不会自动出现这些下载文件。
 
@@ -61,7 +45,7 @@ Release 位于原始交付仓库，个人模板仓库中不会自动出现这些
 
 第一次验证可以在终端 A 启动参考服务端，再在同一目录的终端 B 启动参考客户端。输入第一条 ping 请求并回车，应收到 `{"id":1,"ok":true,"data":"pong"}`，字段顺序可以不同。随后退出客户端，在终端 A 按 Ctrl-C 停止服务端。
 
-验证个人代码时，用参考服务端替换自己的服务端，或用参考客户端替换自己的客户端。同一端口只启动一个服务端。起始服务端的连接行为以所选项目说明为准。
+同一端口只启动一个服务端。起始服务端的连接行为见所选项目说明。
 
 默认客户端响应期限 12,000 ms、服务端完整请求读取期限 30,000 ms、退出宽限 2,000 ms；均支持命令行配置。服务端在等待下一条请求时也会计时，输入停顿超过期限后需要重新连接。手动练习时可提高读取期限，例如 Linux 下执行：
 
@@ -77,4 +61,4 @@ Windows/macOS 使用相应文件名和启动方式，其余参数相同。验收
 - 参考客户端连接自己的服务端：直接输入所选项目协议中的请求，验证处理结果。
 - 起始服务端仅支持已有动作；未完成动作返回 unknown_action 是预期状态。
 - 协议结果以所选项目 protocol.md 为准；错误说明文字不必逐字相同。
-- 自查脚本与参考程序都不是完整测试答案，仍需自行验证边界和界面。
+- 按验收清单补充边界和客户端操作测试。
