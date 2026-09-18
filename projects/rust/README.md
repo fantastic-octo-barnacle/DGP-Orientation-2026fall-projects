@@ -1,6 +1,8 @@
 # Rust 本地通信服务
 
-在可运行的框架上学习 Rust、协议建模、错误处理和异步任务管理。适合已经能用任意语言独立编写简单程序的候选人，不要求事先会 Rust。
+本项目难度较高，适合已经能用任意语言独立编写简单程序、希望进一步挑战的同学。你将在可运行的框架上学习 Rust、协议建模、错误处理和异步任务管理，可以在项目过程中学习 Rust。
+
+开始前，完成 [Git/GitHub](../../common/git-github.md) 与 [WSL2](../../common/wsl2.md) 共通任务；已有基础的同学也需要完成，WSL2 按设备条件完成相应内容。
 
 ## 三个独立项目
 
@@ -10,7 +12,7 @@
 
 各目录都有独立 Cargo.toml 和 Cargo.lock。没有 workspace，也没有共享协议 crate。协议类型各自维护，需要通过[同一协议](protocol.md)和测试保持一致。
 
-基线已有非法 JSON、未知动作和连接结束等基础处理；没有故意埋 bug。完整连续交互、长度限制、超时和任务管理是后续明确的能力扩展。
+基线已有非法 JSON、未知动作和连接结束等基础处理。完整连续交互、长度限制、超时和任务管理是后续明确的能力扩展。
 
 ## 恢复、运行和检查
 
@@ -28,7 +30,7 @@ cargo run --locked --manifest-path server-sync/Cargo.toml -- 127.0.0.1:7878
 cargo run --locked --manifest-path client-sync/Cargo.toml -- 127.0.0.1:7878
 ```
 
-Ctrl-C 停止服务端，再将第一条命令的 server-sync 换成 server-async，重复验证。两种服务端使用同端口时不要同时启动。
+Ctrl-C 停止服务端，再将第一条命令的 server-sync 换成 server-async，重复验证。两种服务端使用同一端口时，依次启动验证。
 
 分别在三个项目目录执行：
 
@@ -39,7 +41,7 @@ cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked
 ```
 
-target 为本机生成内容，不提交。三个 Cargo.lock 都需要保留；仅一个项目通过检查不等于三个都通过。
+target 为本机生成内容，通过忽略规则保留在本机。三个 Cargo.lock 都需要保留，三个项目分别完成全部检查。
 
 ## 任务递进
 
@@ -55,11 +57,11 @@ target 为本机生成内容，不提交。三个 Cargo.lock 都需要保留；�
 
 ## 阅读与实现边界
 
-从各自 main.rs 的启动和连接循环进入 lib.rs，再看服务端 protocol.rs。同步与异步代码可比较，但不能只把函数加上 async 就认为完成并发。
+从各自 main.rs 的启动和连接循环进入 lib.rs，再看服务端 protocol.rs。比较同步与异步代码，理解 async 读写与并发任务调度的区别，并通过多个连接验证并发行为。
 
 使用 Serde/Serde JSON，异步项目使用 Tokio。错误处理可选标准库、anyhow 或 thiserror，但需要理解自己的选择。不要求特定 IDE。
 
-[通用参考程序](../../reference/README.md)用于替换通信一端，它不是需要继承的源码。参考客户端不会替你构造请求；你的客户端仍需提供正常使用入口。
+[通用参考程序](../../reference/README.md)用于替换通信一端，通过可执行文件运行。使用参考客户端时需自行输入协议请求；你编写的客户端需提供正常使用入口。
 
 ## 成果
 
