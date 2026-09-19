@@ -6,7 +6,9 @@
 *.pyc
 *.exe
 *.zip
+*.tar.gz
 *.sha256
+rm-projects-rust-*/
 .DS_Store
 .vscode/
 .idea/

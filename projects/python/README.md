@@ -1,34 +1,10 @@
-# Python 用户文本服务
+# Python 路线
 
-这是 Python 路线。它与 Rust 路线使用完全相同的任务层级、协议和验收要求，只有实现语言、依赖和运行命令不同。
+任务范围与推进顺序见[公共任务说明](../../common/tasks.md)。本页只说明 Python 工具链与代码入口。
 
-## 三个层级
+## 工具链与检查
 
-| 层级 | 起始目录 | 完成要求 |
-| --- | --- | --- |
-| 客户端 | `client-sync/` | 必做。补齐所有协议操作、输入处理、结果显示和客户端期限。 |
-| 同步服务端 | `server-sync/` | 可选的中间层。实现后可帮助理解路由、状态和同步请求处理；也可以直接跳过。 |
-| 异步服务端 | `server-async/` | 必做的最终服务端。除业务功能外，还要处理异步等待、共享状态、并发和退出。 |
-
-如果直接开始异步服务端，仍然必须完成客户端；跳过同步服务端不会降低异步服务端的验收要求。
-
-## 起始能力和任务
-
-起始代码已经提供 `ping`、注册、登录、退出登录、空文本列表，以及密码处理、令牌生成和基础状态保护示范。登录会替换旧令牌，但令牌暂不过期。
-
-任务按以下顺序推进：
-
-1. **客户端基础交互**：使用完整参考服务端，完成 `echo`、`delay`、注销账号、上传文本、获取文本和删除文本等操作。
-2. **同步服务端**：如果选择这一层，实现与统一协议一致的业务行为；可使用自己的客户端或完整参考客户端测试。
-3. **异步服务端**：在同步业务基础上实现并发处理，确保 `delay` 不阻塞其他请求，并正确管理共享状态。
-4. **令牌过期**：将令牌期限放在服务端任务后段，增加配置、响应字段和过期行为。
-5. **边界与生命周期**：补充输入边界、请求期限、有界退出、错误处理、测试和说明。
-
-详细要求见[统一协议](../../common/protocol.md)和[统一验收清单](../../common/acceptance.md)。
-
-## 配置与运行
-
-使用 Python 3.12 与 uv。每个目录有独立 pyproject.toml、uv.lock 和环境。在各目录分别运行：
+使用 Python 3.12 与 uv。每个任务目录都有独立的 `pyproject.toml`、`uv.lock` 和环境。在对应目录运行：
 
 ```bash
 uv sync --locked
@@ -38,24 +14,12 @@ uv run ruff format --check .
 uv run pyright
 ```
 
-在 `server-sync` 或 `server-async` 目录启动：
+## 运行入口
 
-```bash
-uv run rm-server --host 127.0.0.1 --port 7878
-```
+| 目录 | 起始代码入口 | 启动说明 |
+| --- | --- | --- |
+| `client-sync/` | `src/text_service/client.py` | [同步客户端](client-sync/README.md) |
+| `server-sync/` | `src/text_service/server.py`、`service.py`，Flask | [同步服务端](server-sync/README.md) |
+| `server-async/` | `src/text_service/server.py`、`service.py`，Starlette/Uvicorn | [异步服务端](server-async/README.md) |
 
-另开终端，在 `client-sync` 目录启动：
-
-```bash
-uv run rm-client --url http://127.0.0.1:7878
-```
-
-客户端输入 `ping`，应看到 200 和 pong。然后使用 `register`、`login`、`list`、`logout`，按提示输入账号；输入 `q` 退出。初始文本列表为空，任务命令会在起始代码中提示待完成。
-
-两个服务端使用同一端口时需依次运行，Ctrl-C 停止。地址和端口以启动参数为准。
-
-客户端和服务端也可以使用 Releases 中的完整参考程序交叉验证：参考服务端用于客户端层级，参考客户端用于两个服务端层级。参考程序虽然由 Rust 构建，但只通过统一 HTTP 协议交互，Python 路线同样适用。
-
-从客户端请求入口、服务端 HTTP 入口进入业务处理函数。先理解身份检查、密码计算与状态锁的关系，再扩展路由。完成某一层后，应同步更新该层测试，不要保留只适用于起始状态的断言。
-
-运行[Python 阶段自查](self-check/README.md)，再对照[统一验收清单](../../common/acceptance.md)补充验证。文档应说明运行方式、接口、测试和已知限制，见[成果说明](../../common/deliverables.md)。
+从 HTTP 入口进入业务处理函数，理解身份检查、密码计算与状态锁之间的关系。启动后的操作见[共通交互](../../common/tasks.md#共通交互)；HTTP 检查统一使用[阶段自查](../../common/self-check.md)。
