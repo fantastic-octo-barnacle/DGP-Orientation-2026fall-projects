@@ -30,7 +30,7 @@
 
 使用稳定版 Rust 工具链。在各目录分别运行：
 
-```text
+```bash
 cargo fmt -- --check
 cargo check --locked
 cargo clippy --locked --all-targets -- -D warnings
@@ -42,13 +42,13 @@ cargo build --release --locked
 
 在 `server-sync` 或 `server-async` 目录启动：
 
-```text
+```bash
 cargo run --locked -- --address 127.0.0.1:7878
 ```
 
 另开终端，在 `client-sync` 目录启动：
 
-```text
+```bash
 cargo run --locked -- --url http://127.0.0.1:7878
 ```
 

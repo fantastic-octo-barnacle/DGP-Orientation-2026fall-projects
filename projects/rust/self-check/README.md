@@ -2,7 +2,7 @@
 
 先启动要验证的服务端，在本目录执行（自查工具使用 Python 标准库，需要 Python 3.12，可用 uv 获取）：
 
-```text
+```bash
 uv run --no-project --python 3.12 python ../../../common/check_http.py baseline
 uv run --no-project --python 3.12 python ../../../common/check_http.py business
 uv run --no-project --python 3.12 python ../../../common/check_http.py expiry --ttl 2

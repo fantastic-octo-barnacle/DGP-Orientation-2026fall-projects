@@ -14,7 +14,7 @@
 
 从本目录开始：
 
-```text
+```bash
 cargo test --locked
 cargo run --locked -- --url http://127.0.0.1:7878
 ```

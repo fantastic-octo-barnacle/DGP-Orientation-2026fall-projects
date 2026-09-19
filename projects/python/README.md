@@ -30,7 +30,7 @@
 
 使用 Python 3.12 与 uv。每个目录有独立 pyproject.toml、uv.lock 和环境。在各目录分别运行：
 
-```text
+```bash
 uv sync --locked
 uv run pytest
 uv run ruff check .
@@ -40,13 +40,13 @@ uv run pyright
 
 在 `server-sync` 或 `server-async` 目录启动：
 
-```text
+```bash
 uv run rm-server --host 127.0.0.1 --port 7878
 ```
 
 另开终端，在 `client-sync` 目录启动：
 
-```text
+```bash
 uv run rm-client --url http://127.0.0.1:7878
 ```
 

@@ -14,7 +14,7 @@
 
 从本目录开始：
 
-```text
+```bash
 uv sync --locked
 uv run pytest
 uv run rm-client --url http://127.0.0.1:7878

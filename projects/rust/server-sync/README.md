@@ -13,7 +13,7 @@
 
 可以使用自己的客户端，也可以使用 Releases 中的完整 `rm-client-sync` 参考程序进行验证：
 
-```text
+```bash
 cargo test --locked
 cargo run --locked -- --address 127.0.0.1:7878
 ```
