@@ -1,64 +1,52 @@
-# 通用协议参考程序
+# HTTP 参考程序
 
-参考程序作为已知可工作的通信对端，帮助验证自己的客户端或服务端。它实现 ping、echo、delay、text_stats、number_stats、set/get/delete/list，按所选项目范围使用。
+参考程序用于替换通信的一端，验证请求和服务端行为。它用 Rust 实现完整 HTTP 用户文本服务，包括候选人需要完成的接口和令牌过期。
 
-## 下载
+## 当前版本
 
-从原始交付仓库的 [reference-v1.0.0 Release](https://github.com/fantastic-octo-barnacle/DGP-Orientation-2026fall-projects/releases/tag/reference-v1.0.0) 下载对应平台：
+本仓库提供 [Windows x86-64 可执行文件](bin/rm-http-reference-windows-x86_64.exe)，版本 0.2.0。旧 reference-v1.0.0 使用 TCP JSON 行协议，与本项目不兼容。
 
-- Windows x86-64：`rm-recruit-reference-windows-x86_64.exe`
-- Linux x86-64：`rm-recruit-reference-linux-x86_64`
-- macOS Apple Silicon：`rm-recruit-reference-macos-arm64`
+当前未提供 Linux/macOS 原生 HTTP 参考程序；这些平台可先用[HTTP 自查工具](../common/check_http.py)验证服务端。自查工具不提供参考服务端功能。
 
-WSL2 中使用 Linux 版本，Windows PowerShell 中使用 Windows 版本。
+## 参考服务端
 
-Linux/macOS 下载后，在文件所在目录赋予执行权限：
+在本目录打开终端：
 
-```sh
-# Linux / WSL2
-chmod +x rm-recruit-reference-linux-x86_64
-# macOS Apple Silicon
-chmod +x rm-recruit-reference-macos-arm64
+```powershell
+.\bin\rm-http-reference-windows-x86_64.exe --version
+.\bin\rm-http-reference-windows-x86_64.exe server --bind 127.0.0.1:7878
 ```
 
-Release 位于原始交付仓库，个人模板仓库中不会自动出现这些下载文件。
+启动自己的客户端并连接 `http://127.0.0.1:7878`，验证注册、登录和后续操作。参考服务端在内存中保存数据，重启后清空。默认令牌有效期 300 秒；验证过期时使用 `--token-ttl-seconds 2`。
 
-当前只发布可执行文件，完整参考源码不在本仓库。程序可离线运行，只监听本机地址。具体可用版本以 Release 为准。
+服务端支持并发，请求读取期限 30 秒，Ctrl-C 后最多等待在途请求 2 秒。每个 HTTP 连接处理一个请求后关闭，HTTP 客户端库会按需重新连接。
 
-## 启动
+## 参考客户端
 
-以下以 Linux 文件名示意；Windows 使用 `.\rm-recruit-reference-windows-x86_64.exe`，macOS 使用对应文件名。
+先启动自己的服务端，再使用参考客户端指定 HTTP 方法和路径：
 
-```text
-./rm-recruit-reference-linux-x86_64 --version
-./rm-recruit-reference-linux-x86_64 server --bind 127.0.0.1:7878
-./rm-recruit-reference-linux-x86_64 client --address 127.0.0.1:7878
+```powershell
+.\bin\rm-http-reference-windows-x86_64.exe client GET /ping
 ```
 
-服务端支持连续交互及多个连接；Ctrl-C 触发有界退出。客户端从标准输入读取原始 JSON，每行发送一个请求并显示一个响应。请自行输入下面的 JSON 请求。结束输入时，Windows 终端按 Ctrl-Z 后回车，Linux/macOS 在空行按 Ctrl-D；也可用 Ctrl-C 结束程序。查看 `server --help`、`client --help` 获取配置。
+带 JSON 请求体时，可以将内容保存为 UTF-8 文件。例如 `account.json`：
 
 ```json
-{"id":1,"action":"ping"}
-{"id":2,"action":"echo","data":"hello"}
-{"id":3,"action":"text_stats","text":"hi\nRM"}
+{"username":"alice","password":"password1"}
 ```
 
-第一次验证可以在终端 A 启动参考服务端，再在同一目录的终端 B 启动参考客户端。输入第一条 ping 请求并回车，应收到 `{"id":1,"ok":true,"data":"pong"}`，字段顺序可以不同。随后退出客户端，在终端 A 按 Ctrl-C 停止服务端。
-
-同一端口只启动一个服务端。起始服务端的连接行为见所选项目说明。
-
-默认客户端响应期限 12,000 ms、服务端完整请求读取期限 30,000 ms、退出宽限 2,000 ms；均支持命令行配置。服务端在等待下一条请求时也会计时，输入停顿超过期限后需要重新连接。手动练习时可提高读取期限，例如 Linux 下执行：
-
-```text
-./rm-recruit-reference-linux-x86_64 server --bind 127.0.0.1:7878 --read-timeout-ms 120000
+```powershell
+.\bin\rm-http-reference-windows-x86_64.exe client POST /users --body-file account.json
+.\bin\rm-http-reference-windows-x86_64.exe client POST /sessions --body-file account.json
+.\bin\rm-http-reference-windows-x86_64.exe client GET /texts --token "复制登录响应里的令牌"
 ```
 
-Windows/macOS 使用相应文件名和启动方式，其余参数相同。验收默认行为时使用协议规定的默认值。
+可用 `--url http://127.0.0.1:7878` 指定服务地址；也支持 `--body` 直接传 JSON 字符串，具体转义遵循所用终端。客户端显示 HTTP 状态码和响应体，完整操作期限为 12 秒。
 
-## 如何定位问题
+## 验证方式
 
-- 自己的客户端连接参考服务端：验证请求构造、错误显示和响应处理。
-- 参考客户端连接自己的服务端：直接输入所选项目协议中的请求，验证处理结果。
-- 起始服务端仅支持已有动作；未完成动作返回 unknown_action 是预期状态。
-- 协议结果以所选项目 protocol.md 为准；错误说明文字不必逐字相同。
-- 按验收清单补充边界和客户端操作测试。
+- 自己的客户端连接参考服务端，验证操作入口、请求构造和结果显示。
+- 参考客户端连接自己的服务端，验证各接口及错误响应。
+- 按所选项目的协议构造请求，再结合阶段自查和验收清单补充测试。
+
+起始服务端的六个待实现接口返回 501；参考服务端提供完整实现。参考源码不属于候选人交付内容。

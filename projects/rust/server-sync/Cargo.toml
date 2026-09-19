@@ -1,9 +1,13 @@
 [package]
 name = "rm-server-sync"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
-rust-version = "1.85"
 
 [dependencies]
-serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+clap = { version = "4", features = ["derive"] }
+pbkdf2 = "0.12"
+sha2 = "0.10"
+rand = "0.8"
+subtle = "2"
+tiny_http = "0.12"
