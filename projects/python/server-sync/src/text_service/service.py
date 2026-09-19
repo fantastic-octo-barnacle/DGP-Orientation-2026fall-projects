@@ -1,4 +1,4 @@
-"""In-memory baseline. Implement the six task routes in handle()."""
+"""In-memory baseline. Implement the task routes in handle()."""
 
 import hashlib
 import hmac
@@ -61,7 +61,7 @@ class Service:
                 if self.users.get(name) is not user or not hmac.compare_digest(digest, expected):
                     return 401, {"message": "Invalid username or password"}
                 user.token = secrets.token_urlsafe(32)
-                # Task: record a deadline and return expires_in.
+                # Later server task: record a deadline and return expires_in.
                 return 200, {"data": {"token": user.token}}
         protected = path in ("/texts", "/users/me", "/sessions/current") or path.startswith(
             "/texts/"
@@ -74,7 +74,7 @@ class Service:
                 user = next((u for u in self.users.values() if token and u.token == token), None)
                 if user is None:
                     return 401, {"message": "Login required"}
-                # Task: check token expiry here, before reading or modifying state.
+                # Later server task: check token expiry here, before reading or modifying state.
                 if path == "/sessions/current" and method == "DELETE":
                     user.token = None
                     return 200, {"data": None}

@@ -2,7 +2,7 @@ use rm_server_async::Service;
 use serde_json::{Value, json};
 
 #[test]
-fn input_validation_and_task_boundaries() {
+fn input_validation_and_baseline() {
     let service = Service::default();
     assert_eq!(
         service.handle("GET", "/ping", &Value::Null, ""),
@@ -16,18 +16,6 @@ fn input_validation_and_task_boundaries() {
     ] {
         assert_eq!(service.handle("POST", "/users", &body, "").0, 400);
     }
-    assert_eq!(
-        service
-            .handle("POST", "/echo", &json!({"text":"hello"}), "")
-            .0,
-        501
-    );
-    assert_eq!(
-        service
-            .handle("POST", "/delay", &json!({"milliseconds":0}), "")
-            .0,
-        501
-    );
     assert_eq!(service.handle("GET", "/texts", &Value::Null, "").0, 401);
     assert_eq!(service.handle("GET", "/missing", &Value::Null, "").0, 404);
 }

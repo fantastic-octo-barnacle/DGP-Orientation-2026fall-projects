@@ -1,29 +1,52 @@
 # RM 软件组个人项目
 
-完成 [Git/GitHub](common/git-github.md) 与 [WSL2](common/wsl2.md) 共通任务，再选择 Python 或 Rust 项目。两个项目都提供可运行的起始代码，你将在此基础上增加功能、编写测试，并用 Git 记录修改。
+这是 2026 秋季软件组招新的候选人项目仓库。项目主题是用一种自己选择的语言完成 HTTP 用户文本服务：你需要阅读已有代码和协议，自学缺少的知识，在起始代码上补齐功能、测试和说明。
 
-## 选择项目
+## 选择路线
 
-两个项目都实现 HTTP 用户文本服务：注册登录、个人文本存取、令牌过期，以及同步和异步服务端。
+Python 和 Rust 是两条等价路线。除语言和工具链不同外，任务层级、协议、验收要求和最终行为完全一致。
 
-| | Python | Rust |
-|---|---|---|
-| 难度 | 较低，适合刚学完基础语法、项目经验较少的同学 | 较高，适合能独立编写简单程序、希望进一步挑战的同学 |
-| 学习重点 | 功能扩展、接口、状态管理和异步编程 | 在相同业务上进一步学习所有权、共享状态和异步生命周期 |
-| 入口 | [Python 项目](projects/python/README.md) | [Rust 项目](projects/rust/README.md) |
+| 路线 | 入口 | 工具链 |
+| --- | --- | --- |
+| Python | [Python 项目](projects/python/README.md) | Python 3.12、uv |
+| Rust | [Rust 项目](projects/rust/README.md) | 稳定版 Rust、Cargo |
 
-两者都包含 client-sync、server-sync、server-async 三个独立项目，提供相同的基线功能。只需选择一种语言完成。
+每条路线都包含三个同名层级：`client-sync`、`server-sync`、`server-async`。
+
+## 项目层级
+
+| 层级 | 要求 |
+| --- | --- |
+| 客户端 | 必做。完成同步交互式 HTTP 客户端，可以使用 Release 中的完整服务端进行对接。 |
+| 同步服务端 | 可选的中间层。可以先完成它再进入异步版本；如果认为自己能直接处理异步代码，也可以跳过。 |
+| 异步服务端 | 必做的最终服务端。可以使用自己的客户端或 Release 中的完整客户端进行对接。 |
+
+服务端基础业务完成后，再实现令牌过期。异步服务端还需要处理并发、非阻塞等待和有界退出。完整任务见[统一协议](common/protocol.md)和[统一验收清单](common/acceptance.md)。
+
+本仓库只提供候选人可见的任务说明和起始代码。完整参考程序通过 [GitHub Releases](https://github.com/fantastic-octo-barnacle/DGP-Orientation-2026fall-projects/releases) 提供，不公开参考实现源码。
 
 ## 开始与交付
 
 1. 点击 GitHub 的 **Use this template → Create a new repository**，创建个人仓库。
-2. 完成共通任务，阅读所选项目说明和协议，运行起始代码与测试。
-3. 按阶段完善功能和测试，在个人仓库提交修改。
-4. 对照验收清单，整理[成果说明](common/deliverables.md)要求的代码和文档。
+2. 完成 [Git/GitHub](common/git-github.md) 与 [WSL2](common/wsl2.md) 共通任务。
+3. 选择 Python 或 Rust，阅读对应入口说明，运行起始代码和基线测试。
+4. 下载参考程序：完整服务端用于客户端层级，完整客户端用于两个服务端层级。
+5. 按层级完善功能、测试和文档，保留自然的 Git 提交历史。
+6. 对照[统一验收清单](common/acceptance.md)和[成果说明](common/deliverables.md)整理项目。
+
+最终至少应完成客户端和异步服务端。同步服务端可以完成，也可以在成果说明中注明跳过。
 
 ## 仓库地图
 
-- `common/`：工程基础指引、成果要求和通用 HTTP 自查工具。
-- `projects/python/`：三个 Python 项目、协议和验收说明。
-- `projects/rust/`：三个 Cargo 项目、协议和验收说明。
-- `reference/`：[参考程序使用说明](reference/README.md)。
+- `common/`：两条路线共用的协议、验收、工程指引和 HTTP 自查工具。
+- `projects/python/`：Python 三个层级的起始代码和运行说明。
+- `projects/rust/`：Rust 三个层级的起始代码和运行说明。
+
+## 参考程序
+
+参考程序是与协议兼容的完整可执行程序，不是候选人的代码模板：
+
+- `rm-client-sync`：用于测试 Python 或 Rust 服务端；
+- `rm-server-async`：用于测试 Python 或 Rust 客户端。
+
+当前只提供 Windows x86_64 构建。参考程序不能替代你对所选语言项目的测试、理解和说明。

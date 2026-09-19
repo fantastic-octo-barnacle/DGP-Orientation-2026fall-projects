@@ -28,7 +28,10 @@ def main():
     ) as client:
         try:
             while True:
-                command = input("ping / register / login / logout / list / q > ").strip()
+                command = input(
+                    "ping / register / login / logout / list / echo / delay / "
+                    "delete-user / put / get / delete / q > "
+                ).strip()
                 body = None
                 if command == "q":
                     break
@@ -44,8 +47,11 @@ def main():
                         "logout": ("DELETE", "/sessions/current"),
                         "list": ("GET", "/texts"),
                     }[command]
+                elif command in ("echo", "delay", "delete-user", "put", "get", "delete"):
+                    print("This task is not implemented in the starting code yet.")
+                    continue
                 else:
-                    print("Unknown command. Add the six task commands here.")
+                    print("Unknown command.")
                     continue
                 try:
                     status, result = exchange(client, method, path, token, body)

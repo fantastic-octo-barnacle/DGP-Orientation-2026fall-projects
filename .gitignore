@@ -4,9 +4,12 @@
 **/.ruff_cache/
 **/target/
 *.pyc
+*.exe
+*.zip
+*.sha256
 .DS_Store
 .vscode/
 .idea/
 
-# Local reference build: only executables are candidate-facing.
+# Local-only build output.
 .reference-build/

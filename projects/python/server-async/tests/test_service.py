@@ -37,19 +37,3 @@ def test_concurrent_registration():
     with ThreadPoolExecutor(max_workers=4) as pool:
         statuses = list(pool.map(lambda _: service.handle("POST", "/users", body, "")[0], range(4)))
     assert sorted(statuses) == [201, 409, 409, 409]
-
-
-def test_task_routes_are_unimplemented():
-    service = Service()
-    account = {"username": "alice", "password": "password1"}
-    service.handle("POST", "/users", account, "")
-    token = service.handle("POST", "/sessions", account, "")[1]["data"]["token"]
-    for method, path in [
-        ("POST", "/echo"),
-        ("POST", "/delay"),
-        ("DELETE", "/users/me"),
-        ("PUT", "/texts/a"),
-        ("GET", "/texts/a"),
-        ("DELETE", "/texts/a"),
-    ]:
-        assert service.handle(method, path, {}, f"Bearer {token}")[0] == 501

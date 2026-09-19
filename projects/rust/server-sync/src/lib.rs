@@ -53,6 +53,7 @@ impl Service {
         if method == "GET" && path == "/ping" {
             return (200, json!({"data": "pong"}));
         }
+        // The client layer and the first server layer implement these routes.
         if method == "POST" && matches!(path, "/echo" | "/delay") {
             return error(501, "Candidate task");
         }
@@ -105,7 +106,7 @@ impl Service {
             }
             let token = new_token();
             user.token = Some(token.clone());
-            // Task: record a deadline and include expires_in.
+            // Later server task: record a deadline and include expires_in.
             return (200, json!({"data": {"token": token}}));
         }
         let protected = matches!(path, "/texts" | "/users/me" | "/sessions/current")
@@ -121,7 +122,7 @@ impl Service {
                 return error(401, "Login required");
             };
             let user = users.get_mut(&name).unwrap();
-            // Task: check expiry and keep authorization and state mutation atomic.
+            // Later server task: check expiry and keep authorization and state mutation atomic.
             if method == "DELETE" && path == "/sessions/current" {
                 user.token = None;
                 return (200, json!({"data": null}));
