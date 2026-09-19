@@ -1,18 +1,16 @@
-# Python 阶段自查
+# HTTP 阶段自查
 
-先在另一个终端启动待验证服务端。如果交互客户端还连接着该服务端，先输入 `q` 退出，让服务端能够接收自查连接。在 `projects/python/` 目录按当前阶段选择命令：
+先启动要验证的服务端，在本目录执行（需要 Python 3.12，可用 uv 获取）：
 
 ```text
-uv run python self-check/check.py baseline
-uv run python self-check/check.py text
-uv run python self-check/check.py numbers
-uv run python self-check/check.py store
+uv run --no-project --python 3.12 python ../../../common/check_http.py baseline
+uv run --no-project --python 3.12 python ../../../common/check_http.py business
+uv run --no-project --python 3.12 python ../../../common/check_http.py expiry --ttl 2
+uv run --no-project --python 3.12 python ../../../common/check_http.py concurrency
 ```
 
-可追加 `--port 其他端口`。baseline 和 text 验证基线服务端；numbers、store 仅在相应阶段完成后运行。它们不随默认 pytest 执行。
+可加 `--url http://127.0.0.1:7878` 指定地址。工具只用 Python 标准库，通过 HTTP 验证，无需导入项目代码。
 
-成功显示 `PASS`；结果不符时显示 `FAIL`、检查项、请求、预期 data 和实际响应，退出码为 1。连接失败、超时或响应格式错误会显示对应原因。先核对服务端、端口和当前阶段，再检查 id、响应结构和数值。`store` 使用专用键 `__self_check__`，成功结束时删除该键；运行前确认该键没有个人数据，失败后可能需要手动清理。
+baseline 应在起始代码上通过；其余阶段在完成对应任务后执行。expiry 要求服务端以 `--token-ttl-seconds 2` 启动；concurrency 仅用于异步端。每次自查创建随机账号，未注销的账号会保留到服务端重启。
 
-这些脚本验证服务端的少量正常场景，不能替代客户端功能演示，也不包含所有异常测试。其余要求见[验收清单](../acceptance.md)。
-
-自查仅依赖 Python 标准库，通过 TCP 验证服务端；调整项目内部模块或函数不影响自查。数值结果按协议容差比较，并检查字段类型。
+PASS 只代表当前检查通过。完整输入边界、客户端交互、慢请求与退出仍需按[验收清单](../acceptance.md)验证。

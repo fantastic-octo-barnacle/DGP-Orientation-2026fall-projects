@@ -1,14 +1,16 @@
-# Rust 阶段自查
+# HTTP 阶段自查
 
-先启动待验证的服务端。在 `projects/rust/` 目录执行：
+先启动要验证的服务端，在本目录执行（需要 Python 3.12，可用 uv 获取）：
 
 ```text
-cargo run --locked --manifest-path client-sync/Cargo.toml --example self_check -- baseline 127.0.0.1:7878
-cargo run --locked --manifest-path client-sync/Cargo.toml --example self_check -- actions 127.0.0.1:7878
+uv run --no-project --python 3.12 python ../../../common/check_http.py baseline
+uv run --no-project --python 3.12 python ../../../common/check_http.py business
+uv run --no-project --python 3.12 python ../../../common/check_http.py expiry --ttl 2
+uv run --no-project --python 3.12 python ../../../common/check_http.py concurrency
 ```
 
-baseline 可用于起始服务端；actions 仅在 echo/delay 完成后运行。自查通过输出 PASS，失败会显示响应或断言位置。这个 example 是显式使用的验证工具，不会在 cargo test 中执行阶段动作。
+可加 `--url http://127.0.0.1:7878` 指定地址。工具只用 Python 标准库，通过 HTTP 验证，无需导入项目代码。
 
-工具每个样例使用新连接，仅覆盖少量正常消息；不证明连续交互、候选人客户端入口、并发或退出已完成。其余要求见[验收清单](../acceptance.md)。
+baseline 应在起始代码上通过；其余阶段在完成对应任务后执行。expiry 要求服务端以 `--token-ttl-seconds 2` 启动；concurrency 仅用于异步端。每次自查创建随机账号，未注销的账号会保留到服务端重启。
 
-可使用[参考程序](../../../reference/README.md)替换通信一端。本项目的动作范围以[协议](../protocol.md)为准。
+PASS 只代表当前检查通过。完整输入边界、客户端交互、慢请求与退出仍需按[验收清单](../acceptance.md)验证。

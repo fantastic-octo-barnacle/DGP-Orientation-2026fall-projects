@@ -1,36 +1,29 @@
 # RM 软件组个人项目
 
-本仓库包含 Git/GitHub、WSL2 共通任务，以及 Python、Rust 两个编程项目。完成共通任务后，选择一个编程项目。
-
-两个项目都提供可运行的起始代码。你将在已有代码上添加功能、编写测试，并用 Git 记录修改。
-
-## 从哪里开始
-
-1. 点击 GitHub 的 **Use this template → Create a new repository**，创建自己的仓库，后续开发都在个人仓库中完成。
-2. 完成 [Git/GitHub](common/git-github.md) 与 [WSL2](common/wsl2.md) 共通任务。
-3. 根据自己的基础选择一个项目，阅读项目说明和协议，配置环境，运行起始代码与已有测试。
-4. 按任务阶段添加功能、编写测试，并提交修改。
-5. 对照所选项目的验收清单及[成果说明](common/deliverables.md)整理代码和文档。
+完成 [Git/GitHub](common/git-github.md) 与 [WSL2](common/wsl2.md) 共通任务，再选择 Python 或 Rust 项目。两个项目都提供可运行的起始代码，你将在此基础上增加功能、编写测试，并用 Git 记录修改。
 
 ## 选择项目
 
-**Python 项目更简单，适合编程基础较弱、刚学完基础语法的同学。Rust 项目难度更高，适合有一定基础、希望进一步挑战的同学。**
+两个项目都实现 HTTP 用户文本服务：注册登录、个人文本存取、令牌过期，以及同步和异步服务端。
 
-| | Python 工具服务 | Rust 通信服务 |
+| | Python | Rust |
 |---|---|---|
-| 难度 | 较低，主要练习基础编程和功能扩展 | 较高，需要学习 Rust，并处理并发、超时和任务退出 |
-| 适合起点 | 学过变量、分支、循环和函数，项目经验较少 | 能独立完成简单的输入、处理和输出程序 |
-| 起始内容 | 完整同步通信、ping/echo、服务端文本统计 | 同步客户端、同步服务端、异步服务端三个独立 Cargo 项目，均支持 ping |
-| 主要任务 | 接入客户端、增加数值统计和内存键值存取 | 扩展协议、完善连接处理、实现并发、超时和退出 |
+| 难度 | 较低，适合刚学完基础语法、项目经验较少的同学 | 较高，适合能独立编写简单程序、希望进一步挑战的同学 |
+| 学习重点 | 功能扩展、接口、状态管理和异步编程 | 在相同业务上进一步学习所有权、共享状态和异步生命周期 |
 | 入口 | [Python 项目](projects/python/README.md) | [Rust 项目](projects/rust/README.md) |
 
-如果基础语法还不熟悉，建议先补学，再从 Python 项目开始。选择 Rust 项目的同学可以在项目过程中学习 Rust。你可以根据实际学习情况调整项目选择。
+两者都包含 client-sync、server-sync、server-async 三个独立项目，提供相同的基线功能。只需选择一种语言完成。
+
+## 开始与交付
+
+1. 点击 GitHub 的 **Use this template → Create a new repository**，创建个人仓库。
+2. 完成共通任务，阅读所选项目说明和协议，运行起始代码与测试。
+3. 按阶段完善功能和测试，在个人仓库提交修改。
+4. 对照验收清单，整理[成果说明](common/deliverables.md)要求的代码和文档。
 
 ## 仓库地图
 
-- `common/`：工程基础指引和成果要求。
-- `projects/python/`：Python 源码、测试、协议及自查。
-- `projects/rust/`：三个独立 Cargo 项目、协议及自查。
-- `reference/`：[通用协议参考程序](reference/README.md)，用于替换通信一端验证行为。
-
-两个项目使用通用通信协议，可用参考程序验证自己的客户端或服务端。
+- `common/`：工程基础指引、成果要求和通用 HTTP 自查工具。
+- `projects/python/`：三个 Python 项目、协议和验收说明。
+- `projects/rust/`：三个 Cargo 项目、协议和验收说明。
+- `reference/`：[参考程序使用说明](reference/README.md)。

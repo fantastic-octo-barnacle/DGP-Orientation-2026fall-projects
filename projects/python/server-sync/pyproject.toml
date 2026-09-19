@@ -1,0 +1,28 @@
+[project]
+name = "rm-server-sync"
+version = "0.2.0"
+requires-python = ">=3.12"
+dependencies = ["flask>=3.1,<4"]
+
+[project.scripts]
+rm-server = "text_service.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.11,<1", "pyright>=1.1,<2"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/text_service"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pyright]
+include = ["src", "tests"]
+typeCheckingMode = "basic"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

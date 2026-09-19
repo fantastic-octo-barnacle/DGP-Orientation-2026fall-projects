@@ -1,27 +1,59 @@
-use std::io::{BufRead, BufReader, Write};
-use std::net::{TcpListener, TcpStream};
+use rm_server_sync::Service;
+use serde_json::{Value, json};
 
 #[test]
-fn one_request_then_close() {
-    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-    let address = listener.local_addr().unwrap();
-    let worker = std::thread::spawn(move || {
-        let (stream, _) = listener.accept().unwrap();
-        rm_server_sync::serve_once(stream).unwrap();
-    });
-    let mut stream = TcpStream::connect(address).unwrap();
-    stream
-        .set_read_timeout(Some(std::time::Duration::from_secs(2)))
-        .unwrap();
-    writeln!(stream, r#"{{"id":7,"action":"ping"}}"#).unwrap();
-    let mut reader = BufReader::new(stream);
-    let mut line = String::new();
-    reader.read_line(&mut line).unwrap();
+fn input_validation_and_task_boundaries() {
+    let service = Service::default();
     assert_eq!(
-        serde_json::from_str::<serde_json::Value>(&line).unwrap()["id"],
-        7
+        service.handle("GET", "/ping", &Value::Null, ""),
+        (200, json!({"data":"pong"}))
     );
-    line.clear();
-    assert_eq!(reader.read_line(&mut line).unwrap(), 0);
-    worker.join().unwrap();
+    for body in [
+        Value::Null,
+        json!([]),
+        json!({"username":true,"password":"password1"}),
+        json!({"username":"a/b","password":"password1"}),
+    ] {
+        assert_eq!(service.handle("POST", "/users", &body, "").0, 400);
+    }
+    assert_eq!(
+        service
+            .handle("POST", "/echo", &json!({"text":"hello"}), "")
+            .0,
+        501
+    );
+    assert_eq!(
+        service
+            .handle("POST", "/delay", &json!({"milliseconds":0}), "")
+            .0,
+        501
+    );
+    assert_eq!(service.handle("GET", "/texts", &Value::Null, "").0, 401);
+    assert_eq!(service.handle("GET", "/missing", &Value::Null, "").0, 404);
+}
+
+#[test]
+fn concurrent_registration_has_one_winner() {
+    let service = std::sync::Arc::new(Service::default());
+    let workers: Vec<_> = (0..4)
+        .map(|_| {
+            let service = service.clone();
+            std::thread::spawn(move || {
+                service
+                    .handle(
+                        "POST",
+                        "/users",
+                        &json!({"username":"alice","password":"password1"}),
+                        "",
+                    )
+                    .0
+            })
+        })
+        .collect();
+    let statuses: Vec<_> = workers
+        .into_iter()
+        .map(|worker| worker.join().unwrap())
+        .collect();
+    assert_eq!(statuses.iter().filter(|&&s| s == 201).count(), 1);
+    assert_eq!(statuses.iter().filter(|&&s| s == 409).count(), 3);
 }

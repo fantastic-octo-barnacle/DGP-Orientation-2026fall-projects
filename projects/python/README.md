@@ -1,72 +1,62 @@
-# Python 本地工具服务
+# Python 用户文本服务
 
-本项目难度较低，适合编程基础较弱、刚学完变量、分支、循环和函数等基础语法的同学。你将从已有程序开始，学习阅读代码、添加功能、校验输入和验证修改。项目采用同步通信，围绕文本统计、数值统计和内存键值存取展开。
+适合学过基础语法、项目经验较少的同学。你将学习阅读已有代码、HTTP 接口、状态管理和异步编程。在可运行的起始代码上完善一个支持账号和个人文本存取的服务。
 
-## 基线和任务
+## 三个独立项目
 
-| 阶段 | 已提供 | 你需要完成 |
-|---|---|---|
-| 运行与理解 | 完整通信、文字客户端、ping/echo、环境及检查配置 | 运行两端，追踪一次请求 |
-| 基础：文本统计 | 服务端 text_stats 和测试 | 客户端多行输入、请求构造、结果显示及测试 |
-| 标准：数值统计 | 协议要求与少量样例 | 两端 number_stats、参数校验、错误显示和测试 |
-| 进阶：键值存取 | 协议要求与少量样例 | 两端 set/get/delete/list，验证跨请求状态 |
+- `client-sync/`：同步终端客户端。
+- `server-sync/`：顺序处理请求的同步服务端。
+- `server-async/`：并发处理请求的异步服务端。
 
-详细字段和边界见[协议](protocol.md)，完成要求见[验收清单](acceptance.md)。保留错误处理，由服务端完成业务计算，客户端负责输入、发送请求和显示结果。
+两种服务端分别运行、各自保存内存数据；客户端可以连接其中任意一个。协议相同，业务代码各自维护。
 
-## 配置环境并检查起始代码
+## 起始能力和任务
 
-安装 [uv](https://docs.astral.sh/uv/getting-started/installation/)。在个人仓库根目录打开终端，执行 `cd projects/python`，再运行：
+已提供 ping、注册、登录、退出登录和文本列表的两端实现，以及密码处理、令牌生成和状态保护示范。登录会替换旧令牌，目前没有过期机制。
+
+你需要完成六个接口的客户端操作和两种服务端实现：echo、delay、注销账号、上传文本、获取文本和删除文本。随后增加令牌过期，完善超时与退出处理，并验证异步并发和状态一致性。详细字段见[协议](protocol.md)。
+
+建议按以下顺序推进：
+
+1. 运行基线，追踪一次注册、登录和列表请求。
+2. 实现 echo 与 delay，补齐客户端输入和结果显示。
+3. 实现个人文本存取与账号注销，验证用户隔离和清理行为。
+4. 增加令牌期限及配置，验证旧令牌和过期令牌失效。
+5. 完善异步并发、请求期限和有界退出，补充测试和说明。
+
+## 配置与运行
+
+进入各目录，分别运行：
 
 ```text
 uv sync --locked
 uv run pytest
-uv run ruff format --check .
 uv run ruff check .
+uv run ruff format --check .
 uv run pyright
 ```
 
-项目指定 Python 3.12，uv 可获取对应解释器。清单声明依赖，uv.lock 固定解析版本，.venv 是本机可重建环境。依赖变更后应更新锁文件，.venv 通过忽略规则保留在本机。
+使用 Python 3.12 与 uv。每个目录有独立 pyproject.toml、uv.lock 和环境。
 
-## 第一次运行
-
-终端 A：从个人仓库根目录执行 `cd projects/python`，启动服务端：
+在 server-sync 或 server-async 目录启动：
 
 ```text
-uv run rm-server --port 7878
+uv run rm-server --host 127.0.0.1 --port 7878
 ```
 
-看到 `LISTENING 127.0.0.1:7878` 后，保持终端 A 运行。终端 B：同样进入 `projects/python`，启动客户端：
+另开终端，在 client-sync 目录启动：
 
 ```text
-uv run rm-client --port 7878
+uv run rm-client --url http://127.0.0.1:7878
 ```
 
-在终端 B 输入 `1` 并回车，应看到包含 `"ok": true` 和 `"data": "pong"` 的响应。再输入 `2`，按提示输入 `hello`，应收到 `"data": "hello"`。JSON 字段顺序可以不同。
 
-输入 `q` 退出客户端。保持服务端运行，在终端 B 执行：
+客户端输入 `ping`，应看到 200 和 pong。然后使用 `register`、`login`、`list`、`logout`，按提示输入账号；输入 `q` 退出。初始文本列表为空，上传是待完成任务。
 
-```text
-uv run python self-check/check.py baseline
-uv run python self-check/check.py text
-```
+两种服务端使用同一端口时需依次运行，Ctrl-C 停止。地址和端口以启动参数为准。
 
-看到两项 `PASS` 表示起始服务端自查通过。最后在终端 A 按 Ctrl-C 停止服务端。
+## 阅读与验证
 
-服务端在当前客户端退出后才处理下一个连接。端口被占用时换一个端口，并同步修改服务端、客户端和自查命令的 `--port`。
+从客户端请求入口、服务端 HTTP 入口进入业务处理函数。先理解身份检查、密码计算与状态锁的关系，再扩展路由。现有注释标出了任务入口，代码组织可按需要调整。
 
-## 读代码的路线
-
-- `client.py`：菜单、请求构造、响应显示。
-- `transport.py`：消息收发、长度边界、超时与退出响应。
-- `protocol.py`：请求处理、响应解析与字段检查。
-- `server.py`：接受连接与循环收发。
-- `tests/`：已有能力的测试。
-- `self-check/`：[阶段自查](self-check/README.md)。
-
-先追踪一次 echo，再研究 text_stats 的服务端输入和返回值。新增功能怎样组织、修改哪些文件，由你依据行为目标决定。
-
-## 验证与成果
-
-基线检查应全部通过。每个阶段在保留基线行为的基础上增加测试，结合[通用参考程序](../../reference/README.md)替换一端排查问题。[成果说明](../../common/deliverables.md)列出需要保留的材料。
-
-可选 CI：运行 pytest、Ruff 和 Pyright。
+运行[阶段自查](self-check/README.md)，再对照[验收清单](acceptance.md)补充验证。文档应说明运行方式、接口、测试和已知限制，见[成果说明](../../common/deliverables.md)。可选 CI：自动运行三个项目的检查和测试。
