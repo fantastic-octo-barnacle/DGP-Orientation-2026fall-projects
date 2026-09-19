@@ -22,7 +22,6 @@ def main() -> None:
     parser.add_argument("--url", default="http://127.0.0.1:7878")
     args = parser.parse_args()
     token = ""
-    # Task: replace per-operation timeout with a total HTTP-operation deadline.
     with httpx.Client(
         base_url=args.url, timeout=12, follow_redirects=False, trust_env=False
     ) as client:

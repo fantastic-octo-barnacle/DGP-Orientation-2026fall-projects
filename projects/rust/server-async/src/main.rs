@@ -17,7 +17,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .clone()
         .merge(("address", args.address.ip()))
         .merge(("port", args.address.port()));
-    // Task: request deadline and bounded shutdown, including active business operations.
     app.configure(config).launch().await?;
     Ok(())
 }

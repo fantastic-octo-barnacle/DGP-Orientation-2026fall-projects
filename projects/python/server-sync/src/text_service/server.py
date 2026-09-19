@@ -50,5 +50,4 @@ def main() -> None:
     args = parser.parse_args()
     if not 1 <= args.port <= 65535:
         parser.error("port must be 1..65535")
-    # Task: bounded request reading and shutdown of in-flight requests.
     uvicorn.run(create_app(), host=args.host, port=args.port, workers=1)
