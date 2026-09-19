@@ -22,7 +22,8 @@ line-length = 100
 
 [tool.pyright]
 include = ["src", "tests"]
-typeCheckingMode = "basic"
+typeCheckingMode = "standard"
+reportUnnecessaryTypeIgnoreComment = "error"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
