@@ -19,7 +19,7 @@ cargo build --release --locked
 | 目录 | 起始代码入口 | 启动说明 |
 | --- | --- | --- |
 | `client-sync/` | `src/main.rs`、`src/lib.rs` | [同步客户端](client-sync/README.md) |
-| `server-sync/` | `src/main.rs`、`src/lib.rs`，tiny_http | [同步服务端](server-sync/README.md) |
-| `server-async/` | `src/main.rs`、`src/lib.rs`，Tokio/Axum | [异步服务端](server-async/README.md) |
+| `server-sync/` | `src/main.rs`、`src/http.rs`、`src/lib.rs`，Rocket | [同步服务端](server-sync/README.md) |
+| `server-async/` | `src/main.rs`、`src/http.rs`、`src/lib.rs`，Rocket | [异步服务端](server-async/README.md) |
 
-从 HTTP 入口进入业务处理函数，理解身份检查、密码计算与状态锁之间的关系。启动后的操作见[共通交互](../../common/tasks.md#共通交互)；HTTP 检查统一使用[阶段自查](../../common/self-check.md)，该工具使用 Python 标准库，不依赖 Python 路线代码。
+从 HTTP 入口进入业务处理函数，理解身份检查、密码计算与状态锁之间的关系。启动后的操作见[共通交互](../../common/tasks.md#共通交互)，完成情况按[验收清单](../../common/acceptance.md)验证。

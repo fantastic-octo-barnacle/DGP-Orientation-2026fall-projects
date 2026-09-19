@@ -29,7 +29,7 @@ def main():
         try:
             while True:
                 command = input(
-                    "ping / register / login / logout / list / echo / delay / "
+                    "ping / register / login / logout / list / echo / "
                     "delete-user / put / get / delete / q > "
                 ).strip()
                 body = None
@@ -47,7 +47,7 @@ def main():
                         "logout": ("DELETE", "/sessions/current"),
                         "list": ("GET", "/texts"),
                     }[command]
-                elif command in ("echo", "delay", "delete-user", "put", "get", "delete"):
+                elif command in ("echo", "delete-user", "put", "get", "delete"):
                     print("This task is not implemented in the starting code yet.")
                     continue
                 else:

@@ -25,7 +25,7 @@ class Service:
     def handle(self, method: str, path: str, body: Any, authorization: str) -> tuple[int, dict]:
         if method == "GET" and path == "/ping":
             return 200, {"data": "pong"}
-        if path in ("/echo", "/delay") and method == "POST":
+        if path == "/echo" and method == "POST":
             return 501, {"message": "Candidate task"}
         if path in ("/users", "/sessions") and method == "POST":
             if not isinstance(body, dict) or set(body) != {"username", "password"}:
@@ -85,6 +85,6 @@ class Service:
                 ):
                     return 501, {"message": "Candidate task"}
                 return 405, {"message": "Method not allowed"}
-        if path in ("/ping", "/users", "/sessions", "/echo", "/delay"):
+        if path in ("/ping", "/users", "/sessions", "/echo"):
             return 405, {"message": "Method not allowed"}
         return 404, {"message": "Not found"}

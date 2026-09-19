@@ -1,3 +1,5 @@
+pub mod http;
+
 use pbkdf2::pbkdf2_hmac;
 use rand::{RngCore, rngs::OsRng};
 use serde_json::{Value, json};
@@ -54,7 +56,7 @@ impl Service {
             return (200, json!({"data": "pong"}));
         }
         // The client layer and the first server layer implement these routes.
-        if method == "POST" && matches!(path, "/echo" | "/delay") {
+        if method == "POST" && path == "/echo" {
             return error(501, "Candidate task");
         }
         if method == "POST" && matches!(path, "/users" | "/sessions") {
@@ -137,7 +139,7 @@ impl Service {
             }
             return error(405, "Method not allowed");
         }
-        if matches!(path, "/ping" | "/users" | "/sessions" | "/echo" | "/delay") {
+        if matches!(path, "/ping" | "/users" | "/sessions" | "/echo") {
             return error(405, "Method not allowed");
         }
         error(404, "Not found")

@@ -3,17 +3,19 @@ import asyncio
 import json
 
 import uvicorn
-from starlette.applications import Starlette
-from starlette.requests import Request
-from starlette.responses import JSONResponse
-from starlette.routing import Route
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 from .service import Service
 
 
-def create_app() -> Starlette:
+def create_app() -> FastAPI:
+    app = FastAPI(openapi_url=None, docs_url=None, redoc_url=None)
     service = Service()
 
+    @app.api_route(
+        "/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+    )
     async def dispatch(request: Request):
         body = None
         if request.method in ("POST", "PUT"):
@@ -37,12 +39,9 @@ def create_app() -> Starlette:
             body,
             request.headers.get("Authorization", ""),
         )
-        # Task: implement delay with an async wait, not sleep in this worker.
         return JSONResponse(result, status_code=status)
 
-    return Starlette(
-        routes=[Route("/{path:path}", dispatch, methods=["GET", "POST", "PUT", "DELETE"])]
-    )
+    return app
 
 
 def main():
@@ -53,4 +52,4 @@ def main():
     if not 1 <= args.port <= 65535:
         parser.error("port must be 1..65535")
     # Task: request deadline and bounded shutdown, including active business operations.
-    uvicorn.run(create_app(), host=args.host, port=args.port)
+    uvicorn.run(create_app(), host=args.host, port=args.port, workers=1)

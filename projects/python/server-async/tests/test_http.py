@@ -1,4 +1,5 @@
-from starlette.testclient import TestClient
+import pytest
+from fastapi.testclient import TestClient
 
 from text_service.server import create_app
 
@@ -24,3 +25,20 @@ def test_http_routes():
             ).status_code
             == 413
         )
+
+
+@pytest.mark.parametrize("body", [b"not JSON", b"\xff", b"NaN"])
+def test_invalid_json(body):
+    with TestClient(create_app()) as client:
+        assert client.post("/users", content=body).status_code == 400
+
+
+def test_body_limit_and_routing():
+    with TestClient(create_app()) as client:
+        exact = b"{}" + b" " * (524288 - 2)
+        assert client.post("/echo", content=exact).status_code == 501
+        assert client.post("/echo", content=exact + b" ").status_code == 413
+        assert client.get("/missing").status_code == 404
+        assert client.get("/echo").status_code == 405
+        assert client.patch("/ping").status_code == 405
+        assert client.get("/ping?test=1").json() == {"data": "pong"}

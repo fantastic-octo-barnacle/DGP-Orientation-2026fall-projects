@@ -2,7 +2,7 @@
 name = "rm-server-async"
 version = "0.2.0"
 requires-python = ">=3.12"
-dependencies = ["starlette>=0.46,<1", "uvicorn>=0.34,<1", "httpx>=0.28,<1"]
+dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.34,<1"]
 
 [project.scripts]
 rm-server = "text_service.server:main"
@@ -12,7 +12,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["pytest>=8,<10", "ruff>=0.11,<1", "pyright>=1.1,<2"]
+dev = ["httpx>=0.28,<1", "pytest>=8,<10", "ruff>=0.11,<1", "pyright>=1.1,<2"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/text_service"]

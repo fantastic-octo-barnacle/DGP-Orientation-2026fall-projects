@@ -18,7 +18,6 @@
 | 路线选择、任务范围、起始能力、共通交互 | [公共任务说明](common/tasks.md) |
 | HTTP 接口、状态、输入边界、并发和生命周期要求 | [统一协议](common/protocol.md) |
 | 验证场景与检查方法 | [验收清单](common/acceptance.md) |
-| HTTP 自查工具及阶段命令 | [阶段自查](common/self-check.md) |
 | 下载、平台选择、版本匹配与运行参考程序 | [参考程序](common/reference-programs.md) |
 | 提交历史、测试说明、已知限制与交付文档 | [成果说明](common/deliverables.md) |
 | 语言工具链、运行命令与代码入口 | [Python](projects/python/README.md)、[Rust](projects/rust/README.md) |

@@ -9,4 +9,4 @@ uv sync --locked
 uv run rm-server --host 127.0.0.1 --port 7878
 ```
 
-`src/text_service/server.py` 使用 Starlette/Uvicorn 处理 HTTP，通过 `asyncio.to_thread` 调用同步业务；`service.py` 管理业务状态。HTTP 验证见[阶段自查](../../../common/self-check.md)。
+`src/text_service/server.py` 使用 FastAPI/Uvicorn 的 `async def` 处理 HTTP，通过 `asyncio.to_thread` 将密码计算等同步业务移出事件循环；`service.py` 管理业务状态。HTTP 验证见[验收清单](../../../common/acceptance.md)。

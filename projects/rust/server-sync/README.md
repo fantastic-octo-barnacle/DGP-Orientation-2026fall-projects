@@ -8,4 +8,4 @@
 cargo run --locked -- --address 127.0.0.1:7878
 ```
 
-`src/main.rs` 提供命令行入口，`src/lib.rs` 使用 tiny_http 处理请求并管理业务状态。HTTP 验证见[阶段自查](../../../common/self-check.md)。
+`src/main.rs` 提供命令行入口，`src/http.rs` 使用 Rocket 读取请求后直接调用 `src/lib.rs` 的同步业务。Rocket 本身使用异步运行时，这一层以同步业务调用作为过渡练习，不保证请求串行执行；异步层进一步隔离阻塞工作。HTTP 验证见[验收清单](../../../common/acceptance.md)。

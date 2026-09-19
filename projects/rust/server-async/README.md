@@ -8,4 +8,4 @@
 cargo run --locked -- --address 127.0.0.1:7878
 ```
 
-`src/main.rs` 提供命令行入口，`src/lib.rs` 使用 Tokio/Axum 处理 HTTP，通过 `tokio::task::spawn_blocking` 调用同步业务。HTTP 验证见[阶段自查](../../../common/self-check.md)。
+`src/main.rs` 提供命令行入口，`src/http.rs` 使用 Rocket 处理 HTTP，通过 `rocket::tokio::task::spawn_blocking` 将密码计算等同步业务移出运行时工作线程；`src/lib.rs` 管理业务状态。HTTP 验证见[验收清单](../../../common/acceptance.md)。

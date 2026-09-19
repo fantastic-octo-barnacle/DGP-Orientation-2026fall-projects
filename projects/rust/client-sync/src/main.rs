@@ -28,7 +28,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut token = String::new();
     loop {
         let command = match input(
-            "ping / register / login / logout / list / echo / delay / delete-user / put / get / delete / q > ",
+            "ping / register / login / logout / list / echo / delete-user / put / get / delete / q > ",
         ) {
             Ok(command) => command,
             Err(error) if error.kind() == io::ErrorKind::UnexpectedEof => break,
@@ -51,7 +51,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     },
                 )
             }
-            "echo" | "delay" | "delete-user" | "put" | "get" | "delete" => {
+            "echo" | "delete-user" | "put" | "get" | "delete" => {
                 println!("This task is not implemented in the starting code yet.");
                 continue;
             }

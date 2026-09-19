@@ -9,4 +9,4 @@ uv sync --locked
 uv run rm-server --host 127.0.0.1 --port 7878
 ```
 
-`src/text_service/server.py` 使用 Flask 处理 HTTP，`service.py` 管理业务状态。HTTP 验证见[阶段自查](../../../common/self-check.md)。
+`src/text_service/server.py` 使用 FastAPI/Uvicorn 处理 HTTP：异步依赖读取请求体，普通 `def` 处理函数在线程池中调用 `service.py` 的同步业务。不保证请求串行执行。HTTP 验证见[验收清单](../../../common/acceptance.md)。
