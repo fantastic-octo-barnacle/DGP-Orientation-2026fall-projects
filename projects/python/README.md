@@ -59,4 +59,4 @@ uv run rm-client --url http://127.0.0.1:7878
 
 从客户端请求入口、服务端 HTTP 入口进入业务处理函数。先理解身份检查、密码计算与状态锁的关系，再扩展路由。现有注释标出了任务入口，代码组织可按需要调整。
 
-运行[阶段自查](self-check/README.md)，再对照[验收清单](acceptance.md)补充验证。文档应说明运行方式、接口、测试和已知限制，见[成果说明](../../common/deliverables.md)。可选 CI：自动运行三个项目的检查和测试。
+运行[阶段自查](self-check/README.md)，再对照[验收清单](acceptance.md)补充验证。文档应说明运行方式、接口、测试和已知限制，见[成果说明](../../common/deliverables.md)。
