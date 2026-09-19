@@ -4,7 +4,7 @@
 
 ## 工具链与检查
 
-使用 Python 3.12 与 uv。每个任务目录都有独立的 `pyproject.toml`、`uv.lock` 和环境。在对应目录运行：
+使用 Python 3.13 与 uv。每个任务目录都有独立的 `pyproject.toml`、`uv.lock` 和环境。在对应目录运行：
 
 ```bash
 uv sync --locked
