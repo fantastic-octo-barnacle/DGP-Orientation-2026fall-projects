@@ -20,6 +20,9 @@ packages = ["src/text_service"]
 [tool.ruff]
 line-length = 100
 
+[tool.ruff.lint]
+extend-select = ["PT"]
+
 [tool.pyright]
 include = ["src", "tests"]
 typeCheckingMode = "standard"
