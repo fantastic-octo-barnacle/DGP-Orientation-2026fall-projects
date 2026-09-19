@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from text_service.server import create_app
 
 
-def test_http_routes():
+def test_http_routes() -> None:
     with TestClient(create_app()) as client:
         assert client.get("/ping").status_code == 200
         response = client.post("/users", json={"username": "alice", "password": "password1"})
@@ -28,12 +28,12 @@ def test_http_routes():
 
 
 @pytest.mark.parametrize("body", [b"not JSON", b"\xff", b"NaN"])
-def test_invalid_json(body):
+def test_invalid_json(body: bytes) -> None:
     with TestClient(create_app()) as client:
         assert client.post("/users", content=body).status_code == 400
 
 
-def test_body_limit_and_routing():
+def test_body_limit_and_routing() -> None:
     with TestClient(create_app()) as client:
         exact = b"{}" + b" " * (524288 - 2)
         assert client.post("/echo", content=exact).status_code == 501

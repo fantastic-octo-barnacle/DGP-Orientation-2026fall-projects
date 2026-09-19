@@ -22,7 +22,9 @@ class Service:
         self.users: dict[str, User] = {}
         self.lock = threading.Lock()
 
-    def handle(self, method: str, path: str, body: Any, authorization: str) -> tuple[int, dict]:
+    def handle(
+        self, method: str, path: str, body: Any, authorization: str
+    ) -> tuple[int, dict[str, Any]]:
         if method == "GET" and path == "/ping":
             return 200, {"data": "pong"}
         if path == "/echo" and method == "POST":

@@ -16,7 +16,7 @@ def create_app() -> FastAPI:
     @app.api_route(
         "/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
     )
-    async def dispatch(request: Request):
+    async def dispatch(request: Request) -> JSONResponse:
         body = None
         if request.method in ("POST", "PUT"):
             raw = bytearray()
@@ -44,7 +44,7 @@ def create_app() -> FastAPI:
     return app
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=7878)

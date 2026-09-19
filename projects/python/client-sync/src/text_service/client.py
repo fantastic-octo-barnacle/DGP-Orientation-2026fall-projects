@@ -6,7 +6,7 @@ import httpx
 
 
 def exchange(
-    client: httpx.Client, method: str, path: str, token: str = "", body=None
+    client: httpx.Client, method: str, path: str, token: str = "", body: object = None
 ) -> tuple[int, Any]:
     headers = {"Authorization": f"Bearer {token}"} if token else {}
     response = client.request(method, path, json=body, headers=headers)
@@ -17,7 +17,7 @@ def exchange(
     return response.status_code, result
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://127.0.0.1:7878")
     args = parser.parse_args()

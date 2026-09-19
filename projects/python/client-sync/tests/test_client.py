@@ -3,8 +3,8 @@ import httpx
 from text_service.client import exchange
 
 
-def test_request():
-    def respond(request):
+def test_request() -> None:
+    def respond(request: httpx.Request) -> httpx.Response:
         assert request.url.path == "/texts"
         assert request.headers["Authorization"] == "Bearer example"
         return httpx.Response(200, json={"data": []})

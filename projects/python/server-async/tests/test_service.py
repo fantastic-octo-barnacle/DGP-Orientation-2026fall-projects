@@ -1,7 +1,7 @@
 from text_service.service import Service
 
 
-def test_account_lifecycle():
+def test_account_lifecycle() -> None:
     service = Service()
     account = {"username": "alice", "password": "password1"}
     assert service.handle("GET", "/ping", None, "") == (200, {"data": "pong"})
@@ -17,7 +17,7 @@ def test_account_lifecycle():
     assert service.handle("GET", "/texts", None, f"Bearer {next_token}")[0] == 401
 
 
-def test_validation():
+def test_validation() -> None:
     service = Service()
     for body in (
         None,
@@ -29,7 +29,7 @@ def test_validation():
         assert service.handle("POST", "/users", body, "")[0] == 400
 
 
-def test_concurrent_registration():
+def test_concurrent_registration() -> None:
     from concurrent.futures import ThreadPoolExecutor
 
     service = Service()

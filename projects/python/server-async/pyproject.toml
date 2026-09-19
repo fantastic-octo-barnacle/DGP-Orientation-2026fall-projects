@@ -21,7 +21,7 @@ packages = ["src/text_service"]
 line-length = 100
 
 [tool.ruff.lint]
-extend-select = ["PT", "FAST"]
+extend-select = ["PT", "FAST", "ANN0", "ANN2"]
 
 [tool.pyright]
 include = ["src", "tests"]

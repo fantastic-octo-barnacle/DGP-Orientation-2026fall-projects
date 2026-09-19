@@ -33,7 +33,7 @@ def create_app() -> FastAPI:
     @app.api_route(
         "/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
     )
-    def dispatch(request: Request, body: Annotated[Any, Depends(read_body)]):
+    def dispatch(request: Request, body: Annotated[Any, Depends(read_body)]) -> JSONResponse:
         # FastAPI runs this synchronous handler in a thread pool.
         status, result = service.handle(
             request.method, request.url.path, body, request.headers.get("Authorization", "")
@@ -43,7 +43,7 @@ def create_app() -> FastAPI:
     return app
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=7878)
