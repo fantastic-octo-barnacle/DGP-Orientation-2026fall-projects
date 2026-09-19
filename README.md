@@ -5,7 +5,7 @@
 ## 从这里开始
 
 1. 使用 GitHub 的 **Use this template → Create a new repository** 创建个人仓库。
-2. 完成 [Git/GitHub](common/git-github.md) 共通学习任务。
+2. 完成 [Git/GitHub](common/git-github.md) 学习任务。
 3. 阅读[公共任务说明](common/tasks.md)，了解路线选择、任务层级与推进顺序。
 4. 进入 [Python 路线](projects/python/README.md)或 [Rust 路线](projects/rust/README.md)，安装工具链并运行起始代码。
 5. 按[参考程序使用说明](common/reference-programs.md)选择可用的对接程序，逐步实现并验证任务。

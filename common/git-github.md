@@ -3,7 +3,7 @@
 ## 准备与资料
 
 - 从 [Git 官方网站](https://git-scm.com/downloads)安装 Git，确认能查看版本。已安装者直接使用现有环境。
-- 学习 [Git 教程](https://www.bilibili.com/video/BV1Hkr7YYEh8)。
+- 学习 [Git 和 GitHub 入门教程](https://www.bilibili.com/video/BV1Hkr7YYEh8)。
 
 ## 自检与项目应用
 
