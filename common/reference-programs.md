@@ -9,12 +9,12 @@
 | 运行环境 | 资产中的平台标识 | 压缩格式 |
 | --- | --- | --- |
 | Windows x86_64 | `windows-x86_64` | `.zip` |
-| Linux x86_64，包括相应架构的 WSL2 | `linux-x86_64` | `.tar.gz` |
-| Linux arm64，包括相应架构的 WSL2 | `linux-arm64` | `.tar.gz` |
+| Linux x86_64 | `linux-x86_64` | `.tar.gz` |
+| Linux arm64 | `linux-arm64` | `.tar.gz` |
 | macOS Intel | `macos-x86_64` | `.tar.gz` |
 | macOS Apple Silicon | `macos-arm64` | `.tar.gz` |
 
-选择实际运行终端所在的系统与架构；WSL2 使用 Linux 包。macOS/Linux 可用 `uname -m` 查看架构，`aarch64` 对应 arm64。系统版本与运行库要求以 Release 说明为准，不保证旧系统或所有 Linux 发行版可运行。Windows arm64 暂无原生包。
+选择实际运行终端所在的系统与架构。macOS/Linux 可用 `uname -m` 查看架构，`aarch64` 对应 arm64。系统版本与运行库要求以 Release 说明为准，不保证旧系统或所有 Linux 发行版可运行。Windows arm64 暂无原生包。
 
 资产命名为 `rm-projects-rust-<平台>-reference-vX.Y.Z`，后接压缩扩展名；同名 `.sha256` 文件记录压缩包的校验值。
 
