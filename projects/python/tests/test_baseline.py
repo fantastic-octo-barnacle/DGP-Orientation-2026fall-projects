@@ -1,6 +1,7 @@
 import io
 import socket
 import threading
+import time
 
 import pytest
 
@@ -46,9 +47,35 @@ def test_real_connection_multiple_requests():
         worker.start()
         with socket.create_connection(listener.getsockname(), timeout=2) as client:
             with client.makefile("rb") as reader:
-                assert exchange(client, reader, build_request("1", 1))["data"] == "pong"
+                assert exchange(client, build_request("1", 1))["data"] == "pong"
                 client.sendall(b"{\n")
                 assert b"invalid_json" in reader.readline()
-                assert exchange(client, reader, build_request("2", 2, "again"))["data"] == "again"
+                assert exchange(client, build_request("2", 2, "again"))["data"] == "again"
         worker.join(2)
         assert not worker.is_alive()
+
+
+def test_slow_partial_frame_keeps_buffered_bytes():
+    from tool_service.transport import SocketReader
+
+    client, server = socket.socketpair()
+    errors = []
+
+    def send_fragments():
+        try:
+            client.sendall(b'{"id":')
+            time.sleep(0.5)  # 跨过多次轮询，仍需保留前半条消息。
+            client.sendall(b"1}\r\n{}\n")
+            client.shutdown(socket.SHUT_WR)
+        except OSError as error:
+            errors.append(error)
+
+    with client, server, io.BufferedReader(SocketReader(server)) as reader:
+        worker = threading.Thread(target=send_fragments, daemon=True)
+        worker.start()
+        assert read_frame(reader) == b'{"id":1}'
+        assert read_frame(reader) == b"{}"
+        assert read_frame(reader) is None
+        worker.join(2)
+        assert not worker.is_alive()
+        assert not errors

@@ -57,7 +57,7 @@ uv run python self-check/check.py text
 ## 读代码的路线
 
 - `client.py`：菜单、请求构造、响应显示。
-- `transport.py`：按行读取和长度边界。
+- `transport.py`：消息收发、长度边界、超时与退出响应。
 - `protocol.py`：请求处理、响应解析与字段检查。
 - `server.py`：接受连接与循环收发。
 - `tests/`：已有能力的测试。

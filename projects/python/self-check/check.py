@@ -1,22 +1,41 @@
 """少量正常场景自查，不代替候选人的边界测试与客户端演示。"""
 
 import argparse
+import io
 import json
 import math
 import socket
-from typing import Any, BinaryIO
+import time
+from typing import Any
 
 # 自查只依赖标准库和公开协议，候选人可自由调整项目内部结构。
 MAX_LINE = 65_536
 
 
 def exchange(
-    connection: socket.socket, reader: BinaryIO, request: dict[str, Any]
+    connection: socket.socket,
+    reader: io.BufferedIOBase,
+    request: dict[str, Any],
+    timeout: float = 12,
 ) -> dict[str, Any]:
     connection.sendall(
         json.dumps(request, ensure_ascii=False, allow_nan=False).encode("utf-8") + b"\n"
     )
-    raw = reader.readline(MAX_LINE + 3)
+    deadline = time.monotonic() + timeout
+    original_timeout = connection.gettimeout()
+    raw = b""
+    try:
+        while not raw.endswith(b"\n") and len(raw) < MAX_LINE + 3:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError("等待完整响应超时")
+            connection.settimeout(remaining)
+            chunk = reader.read1(MAX_LINE + 3 - len(raw))
+            if not chunk:
+                break
+            raw += chunk
+    finally:
+        connection.settimeout(original_timeout)
     if not raw.endswith(b"\n"):
         raise ValueError("未收到完整响应行")
     frame = raw[:-1].removesuffix(b"\r")
@@ -71,7 +90,7 @@ def matches_numbers(actual: Any, expected: dict[str, Any]) -> bool:
 
 def check_case(
     connection: socket.socket,
-    reader: BinaryIO,
+    reader: io.BufferedIOBase,
     request: dict[str, Any],
     expected: Any,
 ) -> None:
@@ -95,6 +114,8 @@ def main() -> None:
     parser.add_argument("stage", choices=["baseline", "text", "numbers", "store"])
     parser.add_argument("--port", type=int, default=7878)
     args = parser.parse_args()
+    if not 1 <= args.port <= 65535:
+        parser.error("端口范围为 1–65535")
     try:
         with socket.create_connection(("127.0.0.1", args.port), timeout=12) as connection:
             with connection.makefile("rb") as reader:

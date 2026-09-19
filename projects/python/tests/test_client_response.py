@@ -1,17 +1,12 @@
-import io
 import json
-import socket
 
 import pytest
 
-from tool_service.client import exchange
+from tool_service.protocol import parse_response
 
 
 def read_response(raw):
-    # 使用真实 socket 发送请求；预设响应用于独立检查客户端校验。
-    client, peer = socket.socketpair()
-    with client, peer:
-        return exchange(client, io.BytesIO(raw + b"\n"), {"id": 1, "action": "ping"})
+    return parse_response(raw, 1)
 
 
 @pytest.mark.parametrize(
