@@ -14,63 +14,83 @@
 
 ### `GET /ping`：连通性检查
 
-公开，无请求体。成功为 200，`data` 固定为字符串 `"pong"`。
+公开。无请求体。成功为 200，`data` 固定为字符串 `"pong"`。
 
-请求 `GET /ping` → 200，响应 `{"data":"pong"}`。
+示例：
 
-### `POST /users`：注册
-
-公开。请求为对象，包含字符串 `username`、`password`。成功为 201，`data` 为仅含字符串 `username` 的对象，值为注册的用户名；注册不会自动登录。字段不合法返回 400，用户名已存在返回 409。
-
-请求 `POST /users`，体 `{"username":"alice","password":"password1"}` → 201，响应 `{"data":{"username":"alice"}}`。
-
-### `POST /sessions`：登录
-
-公开。请求为对象，包含字符串 `username`、`password`，字段范围与注册相同。成功为 200，`data` 为包含字符串 `token` 和正整数 `expires_in` 的对象；前者用于后续鉴权，后者为配置的有效秒数。登录替换该用户的旧令牌。字段不合法返回 400，格式合法但用户名不存在或密码错误返回 401。
-
-请求 `POST /sessions`，体 `{"username":"alice","password":"password1"}` → 200，响应 `{"data":{"token":"<token>","expires_in":300}}`（默认有效期，令牌值仅为占位）。
+- 请求 `GET /ping` → 200，响应 `{"data":"pong"}`。
 
 ### `POST /echo`：回显文本
 
 公开。请求为仅含字符串 `text` 的对象。成功为 200，`data` 为输入文本本身，保留 Unicode、换行和空字符串。字段不合法返回 400，文本或请求体超限返回 413；空文本也须提交 `{"text":""}`。
 
-请求 `POST /echo`，体 `{"text":"你好\nRM"}` → 200，响应 `{"data":"你好\nRM"}`。
+示例：
+
+- 请求 `POST /echo`，体 `{"text":"你好\nRM"}` → 200，响应 `{"data":"你好\nRM"}`。
+
+### `POST /users`：注册
+
+公开。请求为对象，包含字符串 `username`、`password`。成功为 201，`data` 为仅含字符串 `username` 的对象，值为注册的用户名；注册不会自动登录。字段不合法返回 400，用户名已存在返回 409。
+
+示例：
+
+- 请求 `POST /users`，体 `{"username":"alice","password":"password1"}` → 201，响应 `{"data":{"username":"alice"}}`。
+
+### `POST /sessions`：登录
+
+公开。请求为对象，包含字符串 `username`、`password`，字段范围与注册相同。成功为 200，`data` 为包含字符串 `token` 和正整数 `expires_in` 的对象；前者用于后续鉴权，后者为配置的有效秒数。登录替换该用户的旧令牌。字段不合法返回 400，格式合法但用户名不存在或密码错误返回 401。
+
+示例：
+
+- 请求 `POST /sessions`，体 `{"username":"alice","password":"password1"}` → 200，响应 `{"data":{"token":"<token>","expires_in":300}}`（默认有效期，令牌值仅为占位）。
 
 ### `PUT /texts/{name}`：上传或覆盖文本
 
 需要鉴权。路径参数 `name` 为文本名称，请求为仅含字符串 `text` 的对象。成功为 200，`data` 为 `null`；不存在则创建，同名则覆盖当前用户的文本。名称或字段不合法返回 400，身份无效返回 401，文本或请求体超限返回 413。
 
-请求 `PUT /texts/note`，体 `{"text":"你好\nRM"}` → 200，响应 `{"data":null}`。
+示例：
+
+- 请求 `PUT /texts/note`，体 `{"text":"你好\nRM"}` → 200，响应 `{"data":null}`。
 
 ### `GET /texts`：列出文本
 
 需要鉴权，无请求体。成功为 200，`data` 为当前用户的文本名称字符串数组，按名称升序排列，无文本时为 `[]`。身份无效返回 401。
 
-请求 `GET /texts` → 200，响应 `{"data":["note"]}`。
+示例：
+
+- 请求 `GET /texts` → 200，响应 `{"data":["note"]}`。
 
 ### `GET /texts/{name}`：获取文本
 
 需要鉴权，无请求体，路径参数 `name` 为文本名称。成功为 200，`data` 为当前用户保存的完整文本字符串，可能为空。名称不合法返回 400，身份无效返回 401，当前用户没有该文本返回 404。
 
-请求 `GET /texts/note` → 200，响应 `{"data":"你好\nRM"}`。
+示例：
+
+- 请求 `GET /texts/note` → 200，响应 `{"data":"你好\nRM"}`。
 
 ### `DELETE /texts/{name}`：删除文本
 
 需要鉴权，无请求体，路径参数 `name` 为文本名称。成功为 200，`data` 为 `null`。名称不合法返回 400，身份无效返回 401，当前用户没有该文本返回 404。
 
-请求 `DELETE /texts/note` → 200，响应 `{"data":null}`。
+示例：
+
+- 请求 `DELETE /texts/note` → 200，响应 `{"data":null}`。
 
 ### `DELETE /sessions/current`：退出登录
 
 需要鉴权，无请求体。成功为 200，`data` 为 `null`，当前令牌立即撤销。身份无效返回 401，重复使用已撤销令牌退出也返回 401。
 
-请求 `DELETE /sessions/current` → 200，响应 `{"data":null}`。
+示例：
+
+- 请求 `DELETE /sessions/current` → 200，响应 `{"data":null}`。
 
 ### `DELETE /users/me`：注销账号
 
 需要鉴权，无请求体。成功为 200，`data` 为 `null`，删除当前用户、其全部文本和令牌。身份无效返回 401。
 
-重新登录取得新令牌后，请求 `DELETE /users/me` → 200，响应 `{"data":null}`。
+示例：
+
+- 重新登录取得新令牌后，请求 `DELETE /users/me` → 200，响应 `{"data":null}`。
 
 ## 用户与身份
 
