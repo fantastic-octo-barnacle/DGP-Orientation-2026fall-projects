@@ -2,10 +2,71 @@
 
 import argparse
 import json
+import math
 import socket
 from typing import Any, BinaryIO
 
-from tool_service.client import exchange
+# 自查只依赖标准库和公开协议，候选人可自由调整项目内部结构。
+MAX_LINE = 65_536
+
+
+def exchange(
+    connection: socket.socket, reader: BinaryIO, request: dict[str, Any]
+) -> dict[str, Any]:
+    connection.sendall(
+        json.dumps(request, ensure_ascii=False, allow_nan=False).encode("utf-8") + b"\n"
+    )
+    raw = reader.readline(MAX_LINE + 3)
+    if not raw.endswith(b"\n"):
+        raise ValueError("未收到完整响应行")
+    frame = raw[:-1].removesuffix(b"\r")
+    if len(frame) > MAX_LINE:
+        raise ValueError("响应超过 65536 字节")
+    try:
+        response = json.loads(frame.decode("utf-8"))
+    except (ValueError, UnicodeError, RecursionError) as error:
+        raise ValueError("响应不是有效的 UTF-8 JSON") from error
+    if (
+        not isinstance(response, dict)
+        or type(response.get("id")) is not int
+        or response["id"] != request["id"]
+        or type(response.get("ok")) is not bool
+    ):
+        raise ValueError(f"响应格式或 id 错误: {response!r}")
+    fields = {"id", "ok", "data"} if response["ok"] else {"id", "ok", "error"}
+    if set(response) != fields:
+        raise ValueError(f"响应字段错误: {response!r}")
+    return response
+
+
+def matches(actual: Any, expected: Any) -> bool:
+    """普通结果逐字段检查类型和值，避免将布尔值当成整数。"""
+    if type(actual) is not type(expected):
+        return False
+    if isinstance(expected, dict):
+        return actual.keys() == expected.keys() and all(
+            matches(actual[key], value) for key, value in expected.items()
+        )
+    return actual == expected
+
+
+def matches_numbers(actual: Any, expected: dict[str, Any]) -> bool:
+    if not isinstance(actual, dict) or actual.keys() != expected.keys():
+        return False
+    if type(actual["count"]) is not int or actual["count"] != expected["count"]:
+        return False
+    for key in ("min", "max", "mean"):
+        value = actual[key]
+        if type(value) not in (int, float):
+            return False
+        try:
+            if not math.isfinite(value) or not math.isclose(
+                value, expected[key], rel_tol=1e-9, abs_tol=1e-12
+            ):
+                return False
+        except OverflowError:
+            return False
+    return True
 
 
 def check_case(
@@ -24,7 +85,8 @@ def check_case(
         response = exchange(connection, reader, request)
     except (OSError, ValueError) as error:
         raise ValueError(f"{details}\n收发失败: {error}") from error
-    if not response["ok"] or response["data"] != expected:
+    compare = matches_numbers if label == "number_stats" else matches
+    if not response["ok"] or not compare(response["data"], expected):
         raise ValueError(f"{details}\n实际响应: {json.dumps(response, ensure_ascii=False)}")
 
 

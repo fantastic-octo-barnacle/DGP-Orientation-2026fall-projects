@@ -58,7 +58,7 @@ uv run python self-check/check.py text
 
 - `client.py`：菜单、请求构造、响应显示。
 - `transport.py`：按行读取和长度边界。
-- `protocol.py`：解析、字段检查和业务处理。
+- `protocol.py`：请求处理、响应解析与字段检查。
 - `server.py`：接受连接与循环收发。
 - `tests/`：已有能力的测试。
 - `self-check/`：[阶段自查](self-check/README.md)。
