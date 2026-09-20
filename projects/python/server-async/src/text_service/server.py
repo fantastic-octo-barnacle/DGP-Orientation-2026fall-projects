@@ -2,7 +2,7 @@ import argparse
 import asyncio
 import json
 import logging
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from time import perf_counter
 
@@ -17,7 +17,7 @@ logger = logging.getLogger("uvicorn.error")
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     logger.info("Press Ctrl+C to exit. All in-memory data is lost on exit.")
     logger.info("Routes:")
     for method, path in ROUTES:
