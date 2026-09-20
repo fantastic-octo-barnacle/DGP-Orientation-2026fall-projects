@@ -1,4 +1,5 @@
 pub mod http;
+mod infrastructure;
 
 use pbkdf2::pbkdf2_hmac;
 use rand::{RngCore, rngs::OsRng};

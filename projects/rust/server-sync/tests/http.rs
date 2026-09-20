@@ -1,7 +1,30 @@
-use rm_server_sync::http::create_app;
+use rm_server_sync::{
+    Service,
+    http::{create_app, with_service},
+};
 use rocket::http::{ContentType, Header, Status};
 use rocket::local::blocking::Client;
 use serde_json::{Value, json};
+
+#[test]
+fn app_uses_supplied_service() {
+    let service = Service::default();
+    let account = json!({"username": "alice", "password": "password1"});
+    assert_eq!(service.handle("POST", "/users", &account, "").0, 201);
+    let configured = Client::tracked(with_service(service)).unwrap();
+    let fresh = Client::tracked(create_app()).unwrap();
+    for (client, expected) in [(&configured, Status::Ok), (&fresh, Status::Unauthorized)] {
+        assert_eq!(
+            client
+                .post("/sessions")
+                .header(ContentType::JSON)
+                .body(account.to_string())
+                .dispatch()
+                .status(),
+            expected
+        );
+    }
+}
 
 #[test]
 fn http_account_lifecycle() {

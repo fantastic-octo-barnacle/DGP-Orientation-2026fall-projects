@@ -22,4 +22,4 @@ cargo build --release --locked
 | `server-sync/` | `src/main.rs`、`src/http.rs`、`src/lib.rs`，Rocket | [同步服务端](server-sync/README.md) |
 | `server-async/` | `src/main.rs`、`src/http.rs`、`src/lib.rs`，Rocket | [异步服务端](server-async/README.md) |
 
-从 HTTP 入口进入业务处理函数，理解身份检查、密码计算与状态锁之间的关系。启动后的操作见[共通交互](../../common/tasks.md#共通交互)，完成情况按[验收清单](../../common/acceptance.md)验证。
+同步服务端从 `src/lib.rs` 的业务函数开始，启动入口、`http` 模块和 HTTP 测试均使用同步接口，底层适配无需修改。异步服务端从 HTTP 入口进入业务处理函数，学习异步等待与阻塞工作隔离。两层都需理解身份检查、密码计算与状态锁之间的关系。启动后的操作见[共通交互](../../common/tasks.md#共通交互)，完成情况按[验收清单](../../common/acceptance.md)验证。

@@ -1,5 +1,5 @@
 use clap::Parser;
-use rm_server_sync::http::create_app;
+use rm_server_sync::{Service, http};
 use std::net::SocketAddr;
 
 #[derive(Parser)]
@@ -8,16 +8,7 @@ struct Args {
     address: SocketAddr,
 }
 
-#[rocket::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
-    let app = create_app();
-    let config = app
-        .figment()
-        .clone()
-        .merge(("address", args.address.ip()))
-        .merge(("port", args.address.port()))
-        .merge(("log_level", "critical"));
-    app.configure(config).launch().await?;
-    Ok(())
+    http::run(args.address, Service::default())
 }
