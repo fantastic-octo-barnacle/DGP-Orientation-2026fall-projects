@@ -36,9 +36,30 @@ def test_invalid_json(body: bytes) -> None:
 def test_body_limit_and_routing() -> None:
     with TestClient(create_app()) as client:
         exact = b"{}" + b" " * (524288 - 2)
-        assert client.post("/echo", content=exact).status_code == 501
-        assert client.post("/echo", content=exact + b" ").status_code == 413
+        assert client.post("/users", content=exact).status_code == 400
+        assert client.post("/users", content=exact + b" ").status_code == 413
         assert client.get("/missing").status_code == 404
-        assert client.get("/echo").status_code == 405
+        assert client.get("/echo").status_code == 404
         assert client.patch("/ping").status_code == 405
         assert client.get("/ping?test=1").json() == {"data": "pong"}
+
+
+@pytest.mark.parametrize(
+    ("method", "path"),
+    [
+        ("POST", "/echo"),
+        ("DELETE", "/users/me"),
+        ("PUT", "/texts/note"),
+        ("GET", "/texts/note"),
+        ("DELETE", "/texts/note"),
+    ],
+)
+def test_unimplemented_routes_are_absent(method: str, path: str) -> None:
+    with TestClient(create_app()) as client:
+        assert client.request(method, path).status_code == 404
+
+
+@pytest.mark.parametrize("path", ["/ping", "/users", "/sessions", "/sessions/current", "/texts"])
+def test_wrong_method_precedes_authentication(path: str) -> None:
+    with TestClient(create_app()) as client:
+        assert client.patch(path).status_code == 405

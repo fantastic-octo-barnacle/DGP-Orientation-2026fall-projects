@@ -72,16 +72,16 @@ fn http_input_and_routing() {
     let exact = format!("{{}}{}", " ".repeat(524_288 - 2));
     assert_eq!(
         client
-            .post("/echo")
+            .post("/users")
             .header(ContentType::JSON)
             .body(&exact)
             .dispatch()
             .status(),
-        Status::NotImplemented
+        Status::BadRequest
     );
     assert_eq!(
         client
-            .post("/echo")
+            .post("/users")
             .header(ContentType::JSON)
             .body(format!("{exact} "))
             .dispatch()
@@ -98,12 +98,39 @@ fn http_input_and_routing() {
         Status::BadRequest
     );
     assert_eq!(client.get("/missing").dispatch().status(), Status::NotFound);
-    assert_eq!(
-        client.get("/echo").dispatch().status(),
-        Status::MethodNotAllowed
-    );
+    assert_eq!(client.get("/echo").dispatch().status(), Status::NotFound);
     assert_eq!(
         client.patch("/ping").dispatch().status(),
         Status::MethodNotAllowed
     );
+}
+
+#[test]
+fn unimplemented_routes_are_absent() {
+    use rocket::http::Method;
+    let client = Client::tracked(create_app()).unwrap();
+    for (method, path) in [
+        (Method::Post, "/echo"),
+        (Method::Delete, "/users/me"),
+        (Method::Put, "/texts/note"),
+        (Method::Get, "/texts/note"),
+        (Method::Delete, "/texts/note"),
+    ] {
+        assert_eq!(
+            client.req(method, path).dispatch().status(),
+            Status::NotFound
+        );
+    }
+    for path in [
+        "/ping",
+        "/users",
+        "/sessions",
+        "/sessions/current",
+        "/texts",
+    ] {
+        assert_eq!(
+            client.patch(path).dispatch().status(),
+            Status::MethodNotAllowed
+        );
+    }
 }

@@ -1,11 +1,50 @@
-use crate::{Service, error};
+use crate::{ROUTES, Service, error, route_error};
 use rocket::data::ToByteUnit;
+use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::{Method, Status};
 use rocket::route::{Handler, Outcome};
 use rocket::serde::json::Json;
-use rocket::{Build, Data, Request, Rocket, Route};
+use rocket::{Build, Data, Orbit, Request, Response, Rocket, Route};
 use serde_json::Value;
 use std::sync::Arc;
+use std::time::Instant;
+
+struct ConsoleOutput;
+
+#[rocket::async_trait]
+impl Fairing for ConsoleOutput {
+    fn info(&self) -> Info {
+        Info {
+            name: "Console output",
+            kind: Kind::Liftoff | Kind::Request | Kind::Response,
+        }
+    }
+
+    async fn on_liftoff(&self, rocket: &Rocket<Orbit>) {
+        let address = std::net::SocketAddr::new(rocket.config().address, rocket.config().port);
+        eprintln!("Listening on http://{address}");
+        eprintln!("Press Ctrl+C to exit. All in-memory data is lost on exit.");
+        eprintln!("Routes:");
+        for (method, path) in ROUTES {
+            eprintln!("  {method} {path}");
+        }
+    }
+
+    async fn on_request(&self, request: &mut Request<'_>, _: &mut Data<'_>) {
+        request.local_cache(Instant::now);
+    }
+
+    async fn on_response<'r>(&self, request: &'r Request<'_>, response: &mut Response<'r>) {
+        let elapsed = request.local_cache(Instant::now).elapsed();
+        eprintln!(
+            "{} {:?} -> {} {:.1}ms",
+            request.method(),
+            request.uri().path().as_str(),
+            response.status().code,
+            elapsed.as_secs_f64() * 1000.0,
+        );
+    }
+}
 
 #[derive(Clone)]
 struct Dispatch(Arc<Service>);
@@ -15,6 +54,25 @@ impl Handler for Dispatch {
     async fn handle<'r>(&self, request: &'r Request<'_>, data: Data<'r>) -> Outcome<'r> {
         let method = request.method().as_str().to_owned();
         let path = request.uri().path().as_str().to_owned();
+        if let Some(status) = route_error(&method, &path) {
+            return Outcome::from(
+                request,
+                (
+                    Status::new(status),
+                    Json(
+                        error(
+                            status,
+                            if status == 404 {
+                                "Not found"
+                            } else {
+                                "Method not allowed"
+                            },
+                        )
+                        .1,
+                    ),
+                ),
+            );
+        }
         let authorization = request
             .headers()
             .get_one("Authorization")
@@ -74,9 +132,11 @@ pub fn create_app() -> Rocket<Build> {
         Method::Patch,
         Method::Head,
         Method::Options,
+        Method::Trace,
+        Method::Connect,
     ]
     .into_iter()
     .map(|method| Route::new(method, "/<_..>", dispatch.clone()))
     .collect();
-    rocket::build().mount("/", routes)
+    rocket::build().attach(ConsoleOutput).mount("/", routes)
 }

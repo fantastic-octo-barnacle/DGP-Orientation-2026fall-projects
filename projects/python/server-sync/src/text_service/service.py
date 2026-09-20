@@ -8,6 +8,21 @@ import threading
 from dataclasses import dataclass, field
 from typing import Any
 
+ROUTES = (
+    ("GET", "/ping"),
+    ("POST", "/users"),
+    ("POST", "/sessions"),
+    ("DELETE", "/sessions/current"),
+    ("GET", "/texts"),
+)
+
+
+def route_error(method: str, path: str) -> int | None:
+    allowed = next((verb for verb, route in ROUTES if route == path), None)
+    if allowed is None:
+        return 404
+    return None if method == allowed else 405
+
 
 @dataclass
 class User:
@@ -25,10 +40,10 @@ class Service:
     def handle(
         self, method: str, path: str, body: Any, authorization: str
     ) -> tuple[int, dict[str, Any]]:
+        if status := route_error(method, path):
+            return status, {"message": "Not found" if status == 404 else "Method not allowed"}
         if method == "GET" and path == "/ping":
             return 200, {"data": "pong"}
-        if path == "/echo" and method == "POST":
-            return 501, {"message": "Candidate task"}
         if path in ("/users", "/sessions") and method == "POST":
             if not isinstance(body, dict) or set(body) != {"username", "password"}:
                 return 400, {"message": "Expected username and password"}
@@ -65,9 +80,7 @@ class Service:
                 user.token = secrets.token_urlsafe(32)
                 # Later server task: record a deadline and return expires_in.
                 return 200, {"data": {"token": user.token}}
-        protected = path in ("/texts", "/users/me", "/sessions/current") or path.startswith(
-            "/texts/"
-        )
+        protected = path in ("/texts", "/sessions/current")
         if protected:
             token = (
                 authorization.removeprefix("Bearer ") if authorization.startswith("Bearer ") else ""
@@ -82,11 +95,4 @@ class Service:
                     return 200, {"data": None}
                 if path == "/texts" and method == "GET":
                     return 200, {"data": sorted(user.texts)}
-                if (path == "/users/me" and method == "DELETE") or (
-                    path.startswith("/texts/") and method in ("PUT", "GET", "DELETE")
-                ):
-                    return 501, {"message": "Candidate task"}
-                return 405, {"message": "Method not allowed"}
-        if path in ("/ping", "/users", "/sessions", "/echo"):
-            return 405, {"message": "Method not allowed"}
         return 404, {"message": "Not found"}

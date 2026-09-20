@@ -16,7 +16,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .figment()
         .clone()
         .merge(("address", args.address.ip()))
-        .merge(("port", args.address.port()));
+        .merge(("port", args.address.port()))
+        .merge(("log_level", "critical"));
     app.configure(config).launch().await?;
     Ok(())
 }

@@ -8,6 +8,22 @@ use std::collections::BTreeMap;
 use std::sync::Mutex;
 use subtle::ConstantTimeEq;
 
+pub const ROUTES: &[(&str, &str)] = &[
+    ("GET", "/ping"),
+    ("POST", "/users"),
+    ("POST", "/sessions"),
+    ("DELETE", "/sessions/current"),
+    ("GET", "/texts"),
+];
+
+pub fn route_error(method: &str, path: &str) -> Option<u16> {
+    match ROUTES.iter().find(|(_, route)| *route == path) {
+        None => Some(404),
+        Some((allowed, _)) if *allowed != method => Some(405),
+        Some(_) => None,
+    }
+}
+
 pub struct User {
     pub salt: [u8; 16],
     pub digest: [u8; 32],
@@ -52,12 +68,18 @@ impl Service {
         body: &Value,
         authorization: &str,
     ) -> (u16, Value) {
+        if let Some(status) = route_error(method, path) {
+            return error(
+                status,
+                if status == 404 {
+                    "Not found"
+                } else {
+                    "Method not allowed"
+                },
+            );
+        }
         if method == "GET" && path == "/ping" {
             return (200, json!({"data": "pong"}));
-        }
-        // The client layer and the first server layer implement these routes.
-        if method == "POST" && path == "/echo" {
-            return error(501, "Candidate task");
         }
         if method == "POST" && matches!(path, "/users" | "/sessions") {
             let Some(name) = body.get("username").and_then(Value::as_str) else {
@@ -111,8 +133,7 @@ impl Service {
             // Later server task: record a deadline and include expires_in.
             return (200, json!({"data": {"token": token}}));
         }
-        let protected = matches!(path, "/texts" | "/users/me" | "/sessions/current")
-            || path.starts_with("/texts/");
+        let protected = matches!(path, "/texts" | "/sessions/current");
         if protected {
             let token = authorization.strip_prefix("Bearer ").unwrap_or("");
             let mut users = self.users.lock().unwrap();
@@ -132,15 +153,6 @@ impl Service {
             if method == "GET" && path == "/texts" {
                 return (200, json!({"data": user.texts.keys().collect::<Vec<_>>()}));
             }
-            if (method == "DELETE" && path == "/users/me")
-                || (path.starts_with("/texts/") && matches!(method, "GET" | "PUT" | "DELETE"))
-            {
-                return error(501, "Candidate task");
-            }
-            return error(405, "Method not allowed");
-        }
-        if matches!(path, "/ping" | "/users" | "/sessions" | "/echo") {
-            return error(405, "Method not allowed");
         }
         error(404, "Not found")
     }
