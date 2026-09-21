@@ -43,4 +43,4 @@ cargo build --release --locked
 | `server-sync/` | `cargo run --locked -- --address 127.0.0.1:7878` |
 | `server-async/` | `cargo run --locked -- --address 127.0.0.1:7878` |
 
-启动后的操作见[共通交互](../../common/tasks.md#共通交互)，完成情况按[公共任务说明](../../common/tasks.md#收尾与交付)验证。
+启动后的操作见[共通交互](../../common/tasks.md#共通交互)，任务与验证要求见[公共任务说明](../../common/tasks.md)。
