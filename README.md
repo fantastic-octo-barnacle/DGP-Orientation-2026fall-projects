@@ -10,18 +10,18 @@
 4. 阅读[公共任务说明](common/tasks.md)，了解路线选择、任务层级与推进顺序。
 5. 进入 [Python 路线](projects/python/README.md)或 [Rust 路线](projects/rust/README.md)，阅读开发说明和学习指引，并运行起始代码。
 6. 按[参考程序使用说明](common/reference-programs.md)选择可用的对接程序，逐步实现并验证任务。
-7. 对照[验收清单](common/acceptance.md)检查，按[成果说明](common/deliverables.md)整理交付。
+7. 按[公共任务说明](common/tasks.md)收尾交付，并用[学习自查](common/self-check.md)复盘理解程度。
 
 ## 文档地图
 
 | 内容 | 文档 |
 | --- | --- |
 | 考核重点、完成范围取舍与学习方式 | [前言](common/preface.md) |
-| 路线选择、任务范围、起始能力、共通交互 | [公共任务说明](common/tasks.md) |
+| 路线选择、任务范围与起始能力 | [公共任务说明](common/tasks.md) |
 | HTTP 接口、状态、输入边界、并发和生命周期要求 | [统一协议](common/protocol.md) |
-| 验证场景与检查方法 | [验收清单](common/acceptance.md) |
 | 下载、平台选择、版本匹配与运行参考程序 | [参考程序](common/reference-programs.md) |
-| 提交历史、测试说明、已知限制与交付文档 | [成果说明](common/deliverables.md) |
+| 任务推进、验证与交付要求 | [公共任务说明](common/tasks.md) |
+| 概念与工程理解自查 | [学习自查](common/self-check.md) |
 | 语言开发说明、工具链、运行命令与代码入口 | [Python](projects/python/README.md)、[Rust](projects/rust/README.md) |
 | 语言学习与官方文档查询方法 | [Python](projects/python/learning.md)、[Rust](projects/rust/learning.md) |
 

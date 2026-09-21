@@ -17,4 +17,4 @@
 
 主要从 `lib.rs` 的 `ROUTES`、`route_error()` 和 `Service::handle` 开始扩展接口。增加令牌期限时，在 `main.rs` 解析配置并构造带配置的 `Service`，再传给 `http::run`；业务配置与有效期逻辑由候选人实现。
 
-`tests/http.rs` 通过 `http::with_service` 传入业务实例。完成本层任务无需编写 `async/await`，通常也不需要修改 `infrastructure.rs`。业务直接在 Rocket 工作线程上同步执行，仍须保护共享状态。HTTP 验证见[验收清单](../../../common/acceptance.md)。
+`tests/http.rs` 通过 `http::with_service` 传入业务实例。完成本层任务无需编写 `async/await`，通常也不需要修改 `infrastructure.rs`。业务直接在 Rocket 工作线程上同步执行，仍须保护共享状态。HTTP 验证见[同步服务端](../../../common/tasks.md#同步服务端)。
