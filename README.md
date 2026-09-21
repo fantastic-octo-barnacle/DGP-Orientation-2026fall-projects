@@ -4,7 +4,7 @@
 
 ## 从这里开始
 
-1. 先阅读[考核要求](common/assessment.md)，理解评估重点和完成范围取舍。
+1. 先阅读[前言](common/preface.md)，理解评估重点和完成范围取舍。
 2. 使用 GitHub 的 **Use this template → Create a new repository** 创建个人仓库。
 3. 完成 [Git/GitHub](common/git-github.md) 学习任务。
 4. 阅读[公共任务说明](common/tasks.md)，了解路线选择、任务层级与推进顺序。
@@ -16,7 +16,7 @@
 
 | 内容 | 文档 |
 | --- | --- |
-| 考核重点、完成范围取舍与学习方式 | [考核要求](common/assessment.md) |
+| 考核重点、完成范围取舍与学习方式 | [前言](common/preface.md) |
 | 路线选择、任务范围、起始能力、共通交互 | [公共任务说明](common/tasks.md) |
 | HTTP 接口、状态、输入边界、并发和生命周期要求 | [统一协议](common/protocol.md) |
 | 验证场景与检查方法 | [验收清单](common/acceptance.md) |
