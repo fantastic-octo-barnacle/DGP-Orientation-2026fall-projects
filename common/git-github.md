@@ -4,7 +4,7 @@
 
 - 从 [Git 官方网站](https://git-scm.com/downloads)安装 Git，确认能查看版本。
 - 学习 [Git/GitHub 入门教程](https://www.bilibili.com/video/BV1Hkr7YYEh8)。
-- 其他资料：[Git 基础](https://fantastic-octo-barnacle.github.io/The-Book-of-EC/nodes/engineering/git-basics/intro.html)、[Git 与 GitHub](https://fantastic-octo-barnacle.github.io/The-Book-of-EC/nodes/engineering/git-remote/intro.html)
+- 其他资料：[Git 基础](https://trident-rm.github.io/The-Book-of-EC/nodes/engineering/git-basics/intro.html)、[Git 与 GitHub](https://trident-rm.github.io/The-Book-of-EC/nodes/engineering/git-remote/intro.html)
 
 ## 项目应用
 
