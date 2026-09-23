@@ -4,7 +4,7 @@
 
 ## 下载与平台选择
 
-从本仓库的 [GitHub Releases](https://github.com/fantastic-octo-barnacle/DGP-Orientation-2026fall-projects/releases) 下载。下面是新的参考程序发布规格；**是否已有对应程序，以具体 Release 的资产为准**。旧版单体程序不等同于这里的两个程序，也不保证符合当前协议；没有匹配资产时，请向维护者确认可用版本。
+从本仓库的 [GitHub Releases](https://github.com/trident-rm/DGP-Orientation-2026fall-projects/releases) 下载。下面是新的参考程序发布规格；**是否已有对应程序，以具体 Release 的资产为准**。旧版单体程序不等同于这里的两个程序，也不保证符合当前协议；没有匹配资产时，请向维护者确认可用版本。
 
 | 运行环境 | 资产中的平台标识 | 压缩格式 |
 | --- | --- | --- |
